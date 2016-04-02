@@ -82,6 +82,7 @@
     <target name="init-db">
         <exec executable="vendor/bin/doctrine">
             <arg value="orm:schema-tool:update"/>
+            <arg value="--force"/>
         </exec>
     </target>
 

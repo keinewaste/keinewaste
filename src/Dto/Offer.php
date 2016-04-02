@@ -8,16 +8,15 @@ namespace KeineWaste\Dto;
 class Offer extends Dto implements \JsonSerializable
 {
 
-    function __construct($createdAt, $deliveryType, $description, $distance, $imageUrl, $meetingTime, $status, $title, $user)
+    function __construct($createdAt, $deliveryType, $description, $distance, $products, $meetingTime, $status, $user)
     {
         $this->user = $user;
         $this->createdAt = $createdAt;
         $this->deliveryType = $deliveryType;
         $this->description = $description;
         $this->distance = $distance;
-        $this->imageUrl = $imageUrl;
+        $this->products = $products;
         $this->meetingTime = $meetingTime;
-        $this->title = $title;
         $this->status = $status;
     }
 
@@ -25,11 +24,15 @@ class Offer extends Dto implements \JsonSerializable
 
     public function jsonSerialize()
     {
+        $products = [];
+        foreach ($this->products as $product) {
+            $products[] = $product->jsonSerialize();
+        }
+
         return [
             'id' => $this->id,
-            'title' => $this->title,
             'description' => $this->description,
-            'imageUrl' => $this->imageUrl,
+            'products' => $products,
             'deliveryType' => $this->deliveryType,
             'distance' => $this->distance,
             'status' => $this->status,
@@ -43,13 +46,11 @@ class Offer extends Dto implements \JsonSerializable
     protected $id;
 
     /**
+     * @var User $user
      * @ManyToOne(targetEntity="User")
      * @JoinColumn(name="user_id", referencedColumnName="id")
      */
     protected $user;
-
-    /** @Column(type="string") */
-    protected $title;
 
     /** @Column(type="text") */
     protected $description;
@@ -57,8 +58,11 @@ class Offer extends Dto implements \JsonSerializable
     /** @Column(type="datetime", name="posted_at") */
     protected $createdAt;
 
-    /** @Column(type="string") */
-    protected $imageUrl;
+    /**
+     * @var Product[] $products
+     * @OneToMany(targetEntity="Product", mappedBy="offer")
+     */
+    protected $products;
 
     /** @Column(type="datetime") */
     protected $meetingTime;

@@ -5,6 +5,7 @@ namespace KeineWaste\Fixtures;
 use Doctrine\Common\Persistence\ObjectManager;
 use Doctrine\Common\DataFixtures\FixtureInterface;
 use KeineWaste\Dto\Offer;
+use KeineWaste\Dto\Product;
 use KeineWaste\Dto\User;
 
 class Init implements FixtureInterface
@@ -25,14 +26,31 @@ class Init implements FixtureInterface
             'pickup',
             'blabla',
             5,
-            'https://espngrantland.files.wordpress.com/2015/07/minions_bananas.jpg',
+            [],
             new \DateTime("now"),
             'new',
-            'my bananas',
             $user
         );
 
         $manager->persist($offer);
+
+        $product1 = new Product(
+            'my bananas',
+            'https://espngrantland.files.wordpress.com/2015/07/minions_bananas.jpg',
+            '2pcs',
+            $offer
+        );
+
+        $manager->persist($product1);
+
+        $product2 = new Product(
+            'Potatas',
+            'http://www.potatoes.com/files/5713/4202/4172/07.jpg',
+            '10kg',
+            $offer
+        );
+
+        $manager->persist($product2);
 
         $manager->flush();
     }
