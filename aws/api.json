@@ -35,8 +35,6 @@
       "Description": "Database Password"
     }
   },
-  "Mappings": {
-  },
   "Resources": {
     "MachineRole": {
       "Type": "AWS::IAM::Role",

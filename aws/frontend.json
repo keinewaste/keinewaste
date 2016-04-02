@@ -1,0 +1,223 @@
+{
+  "AWSTemplateFormatVersion": "2010-09-09",
+  "Description": "Keine Waste AWS Stack For API",
+  "Parameters": {
+    "KeyPair": {
+      "Type": "AWS::EC2::KeyPair::KeyName",
+      "Default": "keinewaste",
+      "Description": "Enter SSH key name to access to Machines. Default is keinewaste"
+    },
+    "InstanceTypeParameter": {
+      "Type": "String",
+      "Default": "t2.micro",
+      "Description": "Enter Instance Type."
+    },
+    "FrontendAMI": {
+      "Type": "AWS::EC2::Image::Id",
+      "Description": "Enter AMI id."
+    },
+    "DefaultVpc": {
+      "Type": "AWS::EC2::VPC::Id",
+      "Description": "Enter Default VPC Id."
+    },
+    "HostedZoneId": {
+      "Type": "String",
+      "Description": "Route 53 Hosted Zone",
+      "Default": "Z2FBI7948PAAOA"
+    }
+  },
+  "Resources": {
+    "MachineRole": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Version": "2012-10-17",
+          "Statement": [
+            {
+              "Effect": "Allow",
+              "Principal": {
+                "Service": [
+                  "ec2.amazonaws.com"
+                ]
+              },
+              "Action": [
+                "sts:AssumeRole"
+              ]
+            }
+          ]
+        },
+        "Path": "/",
+        "Policies": [
+          {
+            "PolicyName": "root",
+            "PolicyDocument": {
+              "Version": "2012-10-17",
+              "Statement": [
+                {
+                  "Effect": "Allow",
+                  "Action": "s3:*",
+                  "Resource": "*"
+                }
+              ]
+            }
+          }
+        ]
+      }
+    },
+    "SecurityGroup": {
+      "Type": "AWS::EC2::SecurityGroup",
+      "Properties": {
+        "GroupDescription": "Security Group for API",
+        "VpcId": {
+          "Ref": "DefaultVpc"
+        },
+        "SecurityGroupIngress": [
+          {
+            "IpProtocol": "tcp",
+            "FromPort": "80",
+            "ToPort": "80",
+            "CidrIp": "0.0.0.0/0"
+          },
+          {
+            "IpProtocol": "tcp",
+            "FromPort": "22",
+            "ToPort": "22",
+            "CidrIp": "0.0.0.0/0"
+          }
+        ],
+        "SecurityGroupEgress": [
+          {
+            "IpProtocol": "-1",
+            "FromPort": "0",
+            "ToPort": "65535",
+            "CidrIp": "0.0.0.0/0"
+          }
+        ]
+      }
+    },
+    "APIAutoScalingServerGroup": {
+      "Type": "AWS::AutoScaling::AutoScalingGroup",
+      "Properties": {
+        "AvailabilityZones": {
+          "Fn::GetAZs": {
+            "Ref": "AWS::Region"
+          }
+        },
+        "LaunchConfigurationName": {
+          "Ref": "APILaunchConfig"
+        },
+        "MinSize": "2",
+        "MaxSize": "10",
+        "Cooldown": "300",
+        "DesiredCapacity": "2",
+        "HealthCheckType": "ELB",
+        "HealthCheckGracePeriod": "60",
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "KeineWaste API",
+            "PropagateAtLaunch": "true"
+          }
+        ],
+        "LoadBalancerNames": [
+          {
+            "Ref": "FrontendELB"
+          }
+        ]
+      }
+    },
+    "InstanceProfile": {
+      "Type": "AWS::IAM::InstanceProfile",
+      "Properties": {
+        "Path": "/",
+        "Roles": [
+          {
+            "Ref": "MachineRole"
+          }
+        ]
+      }
+    },
+    "APILaunchConfig": {
+      "Type": "AWS::AutoScaling::LaunchConfiguration",
+      "Properties": {
+        "IamInstanceProfile": {
+          "Fn::GetAtt": [
+            "InstanceProfile",
+            "Arn"
+          ]
+        },
+        "KeyName": {
+          "Ref": "KeyPair"
+        },
+        "ImageId": {
+          "Ref": "FrontendAMI"
+        },
+        "SecurityGroups": [
+          {
+            "Ref": "SecurityGroup"
+          }
+        ],
+        "InstanceType": {
+          "Ref": "InstanceTypeParameter"
+        },
+        "InstanceMonitoring": false
+      }
+    },
+    "FrontendELB": {
+      "Type": "AWS::ElasticLoadBalancing::LoadBalancer",
+      "Properties": {
+        "AvailabilityZones": {
+          "Fn::GetAZs": {
+            "Ref": "AWS::Region"
+          }
+        },
+        "HealthCheck": {
+          "HealthyThreshold": "3",
+          "Interval": "5",
+          "Target": "HTTP:80/v1/ping",
+          "Timeout": "3",
+          "UnhealthyThreshold": "2"
+        },
+        "SecurityGroups": [
+          {
+            "Ref": "SecurityGroup"
+          }
+        ],
+        "Listeners": [
+          {
+            "InstancePort": "80",
+            "InstanceProtocol": "HTTP",
+            "LoadBalancerPort": "80",
+            "PolicyNames": [],
+            "Protocol": "HTTP"
+          }
+        ]
+      }
+    },
+    "FrontendDNSRecord": {
+      "Type": "AWS::Route53::RecordSet",
+      "Properties": {
+        "AliasTarget": {
+          "DNSName": {
+            "Fn::GetAtt": [
+              "FrontendELB",
+              "DNSName"
+            ]
+          },
+          "HostedZoneId": {
+            "Fn::GetAtt": [
+              "FrontendELB",
+              "CanonicalHostedZoneNameID"
+            ]
+          }
+        },
+        "Comment": "API ELB",
+        "HostedZoneId": {
+          "Ref": "HostedZoneId"
+        },
+        "Name": "api.keinewaste.org",
+        "Type": "A"
+      }
+    }
+  }
+}
