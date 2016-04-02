@@ -8,6 +8,10 @@ before_script:
   - aws s3 cp s3://keinewaste/travis.parameters config/properties/
   - ant -Denv=travis
 
+addons:
+  hosts:
+    - api.local.keinewaste.org
+
 script: vendor/bin/codecept run
 
 notifications:
