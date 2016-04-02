@@ -29,6 +29,10 @@
       "Type": "String",
       "Description": "Database Name",
       "Default": "keinewaste"
+    },
+    "DBPass": {
+      "Type": "String",
+      "Description": "Database Password"
     }
   },
   "Mappings": {
@@ -240,6 +244,28 @@
         ]
       }
     },
+    "RDSSecurityGroup": {
+      "Type": "AWS::EC2::SecurityGroup",
+      "Properties": {
+        "GroupDescription": "RDS Security Group",
+        "VpcId": {
+          "Ref": "DefaultVpc"
+        },
+        "SecurityGroupIngress": [
+          {
+            "IpProtocol": "tcp",
+            "FromPort": "3306",
+            "ToPort": "3306",
+            "SourceSecurityGroupId": {
+              "Fn::GetAtt": [
+                "SecurityGroup",
+                "GroupId"
+              ]
+            }
+          }
+        ]
+      }
+    },
     "Database": {
       "Type": "AWS::RDS::DBInstance",
       "Properties": {
@@ -251,7 +277,14 @@
         "Engine": "MySQL",
         "EngineVersion": "5.5",
         "MasterUsername": "keinewaste",
-        "MasterUserPassword": "keinewaste"
+        "MasterUserPassword": {
+          "Ref": "DBPass"
+        },
+        "VPCSecurityGroups": [
+          {
+            "Ref": "RDSSecurityGroup"
+          }
+        ]
       },
       "DeletionPolicy": "Snapshot"
     },
