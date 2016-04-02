@@ -11,4 +11,4 @@ vagrant up
 
 Default mysql login:
 user: root
-password: <no password>
+password: no password
