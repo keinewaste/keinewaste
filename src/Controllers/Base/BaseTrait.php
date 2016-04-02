@@ -6,6 +6,7 @@ use KeineWaste\Services\UserService;
 use Pseudo\Exception;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 use KeineWaste\Config\General as GeneralConfig;
 
@@ -133,12 +134,16 @@ trait BaseTrait
     }
 
 
-    protected function getLoggedUser(Request $request)
+    protected function getLoggedUser(Request $request, $allowAnonymous = false)
     {
         if (null == $this->userService) {
             throw new Exception("User Service is not set");
         }
 
-        return $this->userService->getUserByToken($this->getToken($request));
+        $loggedUser = $this->userService->getUserByToken($this->getToken($request));
+        if ($allowAnonymous === false && $loggedUser === null) {
+            throw new AccessDeniedHttpException();
+        }
+        return $loggedUser;
     }
 }

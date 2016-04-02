@@ -40,10 +40,7 @@ class UserController
         $id = $request->get('id');
 
         if ($id == 'me') {
-            $user = $this->getLoggedUser($request);
-            if (null == $user) {
-                throw new AccessDeniedHttpException();
-            }
+            $user = $this->getLoggedUser($request, false);
         } else {
             $user = $this->userService->getUserById($id);
         }
