@@ -1,0 +1,90 @@
+<project name="Hackathon"
+         basedir="."
+         default="build">
+
+    <property environment="env"/>
+
+    <taskdef resource="net/sf/antcontrib/antlib.xml">
+        <classpath>
+            <pathelement location="ant-contrib-0.6.jar"/>
+        </classpath>
+    </taskdef>
+
+    <macrodef name="composer">
+        <attribute name="command"/>
+        <element name="args" optional="true"/>
+        <sequential>
+            <echo message="composer @{command}"/>
+            <exec executable="composer">
+                <arg value="@{command}"/>
+                <args/>
+            </exec>
+        </sequential>
+    </macrodef>
+
+
+    <condition property="isDev">
+        <or>
+            <equals arg1="${env}" arg2="dev"/>
+            <equals arg1="${env}" arg2="travis"/>
+        </or>
+
+    </condition>
+
+    <condition property="isProd">
+        <equals arg1="${env}" arg2="prod"/>
+    </condition>
+
+    <property name="config.dir" value="config"/>
+    <property name="parameters.file" value="${config.dir}/properties/${env}.parameters"/>
+
+    <target name="install-dependencies-dev" if="isDev">
+        <echo message="Installing dependencies for testing"/>
+        <composer command="install">
+            <args>
+                <arg value="--no-interaction"/>
+                <arg value="--optimize-autoloader"/>
+            </args>
+        </composer>
+    </target>
+
+    <target name="install-dependencies" if="isProd">
+        <echo message="Installing dependencies for testing"/>
+        <composer command="install">
+            <args>
+                <arg value="--no-interaction"/>
+                <arg value="--no-dev"/>
+                <arg value="--optimize-autoloader"/>
+            </args>
+        </composer>
+    </target>
+
+    <target name="create-properties">
+        <filter filtersfile="${parameters.file}"/>
+        <filter token="project.root" value="${basedir}"/>
+        <copy overwrite="true" file="${config.dir}/di.template.yaml" tofile="${config.dir}/di.yaml"
+              filtering="true" encoding="UTF-8"/>
+    </target>
+
+    <target name="remove-cache">
+        <exec executable="vendor/bin/doctrine">
+            <arg value="orm:clear-cache:metadata"/>
+        </exec>
+    </target>
+
+    <target name="di">
+        <delete file="cache/keinewaste.di.cache.php"/>
+        <exec executable="bin/backend">
+            <arg value="build-di"/>
+        </exec>
+    </target>
+    <target name="build" depends="create-properties,install-dependencies,install-dependencies-dev,di,remove-cache">
+
+    </target>
+
+    <target name="test">
+        <exec executable="vendor/bin/codecept">
+            <arg value="run"/>
+        </exec>
+    </target>
+</project>
