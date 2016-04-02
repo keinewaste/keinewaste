@@ -18,7 +18,7 @@ class Application extends Base
     protected function setRouting()
     {
         $this->match(static::URL_PREFIX . '/ping', 'controllers.ping:pingAction')->method('GET');
-        $this->match(static::URL_PREFIX . '/users/{id}', 'controllers.user:getAction')->method('GET')->assert('id', '\d+');
+        $this->match(static::URL_PREFIX . '/users/{id}', 'controllers.user:getAction')->method('GET');
         $this->match(static::URL_PREFIX . '/users', 'controllers.users:getAction')->method('GET');
         $this->match(static::URL_PREFIX . '/categories', 'controllers.categories:getAction')->method('GET');
         $this->match(static::URL_PREFIX . '/messages', 'controllers.messages:sendAction')->method('POST');

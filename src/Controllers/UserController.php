@@ -8,6 +8,7 @@ use KeineWaste\Services\UserService;
 use Psr\Log\LoggerAwareTrait;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 
@@ -36,7 +37,16 @@ class UserController
     public function getAction(Request $request)
     {
 
-        $user = $this->userService->getUserById($request->get('id'));
+        $id = $request->get('id');
+
+        if ($id == 'me') {
+            $user = $this->getLoggedUser($request);
+            if (null == $user) {
+                throw new AccessDeniedHttpException();
+            }
+        } else {
+            $user = $this->userService->getUserById($id);
+        }
 
         if (null === $user) {
             throw new NotFoundHttpException();
