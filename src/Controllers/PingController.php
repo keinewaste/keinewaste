@@ -13,6 +13,16 @@ class PingController
     use BaseTrait;
 
     /**
+     * Return latest git commit
+     */
+    public function getVersion()
+    {
+        chdir(realpath(__DIR__ . '/../../'));
+        exec("git rev-parse HEAD", $current);
+        return $current;
+    }
+
+    /**
      * Ping action
      *
      * @param Request $request Request
@@ -24,6 +34,6 @@ class PingController
     {
         return $this
             ->getResponse()
-            ->setData(['result' => 'PONG']);
+            ->setData(['result' => $this->getVersion()]);
     }
 }
