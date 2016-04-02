@@ -8,7 +8,7 @@ use KeineWaste\Services\UserService;
 use Psr\Log\LoggerAwareTrait;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
+use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 
@@ -54,5 +54,27 @@ class UserController
             ->setData(
                 $user
             );
+    }
+
+    public function updateAction(Request $request)
+    {
+        $user = $this->getLoggedUser($request, false);
+
+        $requestContent = $request->getContent();
+
+        $requestData = json_decode($requestContent, true);
+
+        if ($requestData == null || !is_array($requestData)) {
+            throw new BadRequestHttpException();
+        }
+
+        $this->userService->updateUser($user, $requestData);
+
+        return $this
+            ->getResponse()
+            ->setData(
+                $user
+            )
+            ->setStatusCode(201);
     }
 }

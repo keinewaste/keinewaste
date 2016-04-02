@@ -164,5 +164,18 @@ class UserService
             return null;
         }
     }
+
+    public function updateUser(User $user, array $data)
+    {
+        foreach ($data as $key => $value) {
+            $methodName = 'set' . ucfirst($key);
+            if (method_exists($user, $methodName)) {
+                call_user_func_array([$user, $methodName], [$value]);
+            } else {
+                throw new Exception($key . ' is not a valid property');
+            }
+        }
+        $this->repository->save($user);
+    }
 }
 
