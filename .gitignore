@@ -6,3 +6,4 @@ config/di.yaml
 cache/*
 !cache/.keep
 tests/_output/*
+config/properties/*
