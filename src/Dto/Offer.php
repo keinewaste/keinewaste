@@ -44,6 +44,7 @@ class Offer extends Dto implements \JsonSerializable
             'distance' => $this->distance,
             'status' => $this->status,
             'categories' => $categories,
+            'meetingTime' => $this->meetingTime,
         ];
     }
 
