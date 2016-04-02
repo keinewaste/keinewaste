@@ -72,11 +72,12 @@ services:
         class: "KeineWaste\\Application\\Application"
         arguments:
          -
-            debug                 : '%app.debug%'
-            cache                 : '%http_cache%'
-            controllers.ping      : '@PingController'
-            controllers.user      : '@UserController'
-            controllers.users     : '@UsersController'
+            debug                    : '%app.debug%'
+            cache                    : '%http_cache%'
+            controllers.ping         : '@PingController'
+            controllers.user         : '@UserController'
+            controllers.users        : '@UsersController'
+            controllers.messages     : '@MessagesController'
             controllers.autocomplete : '@AutocompleteController'
 
         calls:
@@ -307,6 +308,16 @@ services:
          - [setResponse, ['@DefaultResponse']]
          - [setConfig, ['@DefaultControllerConfig']]
 
+    MessagesController:
+        class: "KeineWaste\\Controllers\\MessagesController"
+        lazy: true
+        public: false
+        arguments:
+         - '@MessageService'
+         - '@UserService'
+        calls:
+         - [setResponse, ['@DefaultResponse']]
+         - [setConfig, ['@DefaultControllerConfig']]
 
 # Services
 
@@ -337,7 +348,7 @@ services:
         calls:
           - [setLogger, ['@Logger']]
 
-    UserDoctrineRepository:
+    UserRepository:
         class: "KeineWaste\\Services\\Repository\\UserRepository"
         lazy: false
         public: false
@@ -351,8 +362,26 @@ services:
         lazy: true
         public: false
         arguments:
-          - '@UserDoctrineRepository'
+          - '@UserRepository'
         calls:
           - [setLogger, ['@Logger']]
 
+
+    MessageRepository:
+        class: "KeineWaste\\Services\\Repository\\MessageRepository"
+        lazy: false
+        public: false
+        arguments:
+          - '@DoctrineEntityManager'
+        calls:
+          - [setLogger, ['@Logger']]
+
+    MessageService:
+        class: "KeineWaste\\Services\\MessageService"
+        lazy: true
+        public: false
+        arguments:
+          - '@MessageRepository'
+        calls:
+          - [setLogger, ['@Logger']]
 
