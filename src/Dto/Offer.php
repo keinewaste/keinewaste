@@ -1,5 +1,6 @@
 <?php
 namespace KeineWaste\Dto;
+use Doctrine\Common\Collections\ArrayCollection;
 
 /**
  * @Entity
@@ -8,14 +9,15 @@ namespace KeineWaste\Dto;
 class Offer extends Dto implements \JsonSerializable
 {
 
-    function __construct($createdAt, $deliveryType, $description, $distance, $products, $meetingTime, $status, $user)
+    function __construct($createdAt, $deliveryType, $description, $distance, $products, $meetingTime, $status, $user, $categories)
     {
         $this->user = $user;
         $this->createdAt = $createdAt;
         $this->deliveryType = $deliveryType;
         $this->description = $description;
         $this->distance = $distance;
-        $this->products = $products;
+        $this->products = $products ? $products : new ArrayCollection;
+        $this->categories = $categories ? $categories : new ArrayCollection;
         $this->meetingTime = $meetingTime;
         $this->status = $status;
     }
@@ -29,6 +31,11 @@ class Offer extends Dto implements \JsonSerializable
             $products[] = $product->jsonSerialize();
         }
 
+        $categories = [];
+        foreach ($this->categories as $category) {
+            $categories[] = $category->jsonSerialize();
+        }
+
         return [
             'id' => $this->id,
             'description' => $this->description,
@@ -36,6 +43,7 @@ class Offer extends Dto implements \JsonSerializable
             'deliveryType' => $this->deliveryType,
             'distance' => $this->distance,
             'status' => $this->status,
+            'categories' => $categories,
         ];
     }
 
@@ -51,6 +59,16 @@ class Offer extends Dto implements \JsonSerializable
      * @JoinColumn(name="user_id", referencedColumnName="id")
      */
     protected $user;
+
+    /**
+     * @var Category[] $categories
+     * @ManyToMany(targetEntity="Category",cascade={"persist"})
+     * @JoinTable(name="offers_categories",
+     *      joinColumns={@JoinColumn(name="offer_id", referencedColumnName="id")},
+     *      inverseJoinColumns={@JoinColumn(name="category_id", referencedColumnName="id", unique=true)}
+     *      )
+     */
+    protected $categories;
 
     /** @Column(type="text") */
     protected $description;

@@ -77,6 +77,7 @@ services:
             controllers.ping      : '@PingController'
             controllers.user      : '@UserController'
             controllers.users     : '@UsersController'
+            controllers.categories : '@CategoriesController'
             controllers.autocomplete : '@AutocompleteController'
 
         calls:
@@ -212,6 +213,7 @@ services:
         arguments:
           - '@DoctrineEntityManager'
           -
+            - '@CategoryFixture'
             - '@InitFixture'
 
 #Services
@@ -227,6 +229,8 @@ services:
 #Fixtures
     InitFixture:
         class: "KeineWaste\\Fixtures\\Init"
+    CategoryFixture:
+        class: "KeineWaste\\Fixtures\\Categories"
 
 #Controllers
 
@@ -289,6 +293,16 @@ services:
 
     UsersController:
         class: "KeineWaste\\Controllers\\UsersController"
+        lazy: true
+        public: false
+        arguments:
+         - '@DoctrineEntityManager'
+        calls:
+         - [setResponse, ['@DefaultResponse']]
+         - [setConfig, ['@DefaultControllerConfig']]
+
+    CategoriesController:
+        class: "KeineWaste\\Controllers\\CategoriesController"
         lazy: true
         public: false
         arguments:
