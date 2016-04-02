@@ -18,7 +18,7 @@ class Init extends AbstractFixture implements OrderedFixtureInterface
         $user = new User(1, 'no@email.com', 'Mark Sugarmountain');
         $user->setAddress('Greifswalder Str 212');
         $user->setCompanyName('FeedingFeeding');
-        $user->setType('foodbank');
+        $user->setType('donor');
 
         $user->setToken('CAAYBQjWI6owBAJjuUjikvtFoAjPkNcpm5gFzZCu5d6SXg1NwsHQdwc7SaA7TZBK0ob3kOAvogAOhtOMIwhR0KNqzZAXuDb5iTaWmWRQ2B36FXZBJysy9RdBZBqF82Ud04NvxZAMaz5tyKEg9SXB8LZB6ZCRuZA7aMx6WryNw5IJeMRwem3yBF7Icsz4hkj21r0uPnYLJgTIiEuTEo3yNOkn5n');
 
