@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/keinewaste/keinewaste.svg?branch=master)](https://travis-ci.org/keinewaste/keinewaste)
+
 # KEINE WASTE
 
 # Local development
