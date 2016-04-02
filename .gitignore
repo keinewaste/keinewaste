@@ -1,0 +1,8 @@
+vendor
+.vagrant
+.idea
+.DS_Store
+config/di.yaml
+cache/*
+!cache/.keep
+tests/_output/*

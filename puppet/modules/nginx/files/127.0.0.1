@@ -1,0 +1,31 @@
+upstream backend {
+        server unix:/var/run/php5-fpm.sock;
+}
+
+
+server {
+        client_max_body_size 10M;
+
+        listen 80;
+        server_name  _;
+
+        root /vagrant/public;
+        index index.php index.html index.htm;
+
+        location ~ \.(hh|php)$ {
+                fastcgi_keep_conn on;
+                fastcgi_pass   backend;
+                fastcgi_index  index.php;
+                fastcgi_param  SCRIPT_FILENAME $document_root$fastcgi_script_name;
+                include        fastcgi_params;
+        }
+
+        location / {
+                try_files $uri $uri/ @handler;
+        }
+
+        location @handler {
+            rewrite / /index.php;
+        }
+}
+
