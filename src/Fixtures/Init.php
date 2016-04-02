@@ -31,14 +31,12 @@ class Init extends AbstractFixture implements OrderedFixtureInterface
 
         // @todo:created_at should be generated
         $offer = new Offer(
-            new \DateTime("now"),
+            $user,
             'pickup',
             'blabla',
             5,
             [],
             new \DateTime("now"),
-            'new',
-            $user,
             [$categoriesRepository->find(1) , $categoriesRepository->find(2)]
         );
 

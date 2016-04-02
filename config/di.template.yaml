@@ -80,6 +80,7 @@ services:
             controllers.messages     : '@MessagesController'
             controllers.categories : '@CategoriesController'
             controllers.autocomplete : '@AutocompleteController'
+            controllers.market : '@MarketController'
 
         calls:
          - [register, ['@ServiceControllerServiceProvider']]
@@ -227,6 +228,12 @@ services:
           - '%spoonacular.baseUrlRecipeImage%'
           - '%spoonacular.baseUrlIngredientImage%'
 
+    MarketService:
+        class: "KeineWaste\\Services\\MarketService"
+        lazy: true
+        arguments:
+          - '@DoctrineEntityManager'
+
 #Fixtures
     InitFixture:
         class: "KeineWaste\\Fixtures\\Init"
@@ -298,6 +305,16 @@ services:
         public: false
         arguments:
          - '@UserService'
+        calls:
+         - [setResponse, ['@DefaultResponse']]
+         - [setConfig, ['@DefaultControllerConfig']]
+
+    MarketController:
+        class: "KeineWaste\\Controllers\\MarketController"
+        lazy: true
+        public: false
+        arguments:
+         - '@MarketService'
         calls:
          - [setResponse, ['@DefaultResponse']]
          - [setConfig, ['@DefaultControllerConfig']]

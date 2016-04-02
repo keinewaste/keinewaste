@@ -9,17 +9,18 @@ use Doctrine\Common\Collections\ArrayCollection;
 class Offer extends Dto implements \JsonSerializable
 {
 
-    function __construct($createdAt, $deliveryType, $description, $distance, $products, $meetingTime, $status, $user, $categories)
+    function __construct($user, $deliveryType, $description, $distance, $products, $meetingTime, $categories)
     {
         $this->user = $user;
-        $this->createdAt = $createdAt;
         $this->deliveryType = $deliveryType;
         $this->description = $description;
         $this->distance = $distance;
         $this->products = $products ? $products : new ArrayCollection;
         $this->categories = $categories ? $categories : new ArrayCollection;
         $this->meetingTime = $meetingTime;
-        $this->status = $status;
+
+        $this->createdAt = new \DateTime("now");
+        $this->status = 'new';
     }
 
     //@todo: __toString()
@@ -45,6 +46,7 @@ class Offer extends Dto implements \JsonSerializable
             'status' => $this->status,
             'categories' => $categories,
             'meetingTime' => $this->meetingTime,
+            'user_id' => $this->user->getId(),
         ];
     }
 
@@ -66,7 +68,7 @@ class Offer extends Dto implements \JsonSerializable
      * @ManyToMany(targetEntity="Category",cascade={"persist"})
      * @JoinTable(name="offers_categories",
      *      joinColumns={@JoinColumn(name="offer_id", referencedColumnName="id")},
-     *      inverseJoinColumns={@JoinColumn(name="category_id", referencedColumnName="id", unique=true)}
+     *      inverseJoinColumns={@JoinColumn(name="category_id", referencedColumnName="id")}
      *      )
      */
     protected $categories;
@@ -94,4 +96,143 @@ class Offer extends Dto implements \JsonSerializable
 
     /** @Column(type="string") */
     protected $status;
+
+    /**
+     * @return mixed
+     */
+    public function getCreatedAt()
+    {
+        return $this->createdAt;
+    }
+
+    /**
+     * @return int
+     */
+    public function getId()
+    {
+        return $this->id;
+    }
+
+    /**
+     * @return \KeineWaste\Dto\User
+     */
+    public function getUser()
+    {
+        return $this->user;
+    }
+
+    /**
+     * @param \KeineWaste\Dto\Category[] $categories
+     */
+    public function setCategories($categories)
+    {
+        $this->categories = $categories;
+    }
+
+    /**
+     * @return \KeineWaste\Dto\Category[]
+     */
+    public function getCategories()
+    {
+        return $this->categories;
+    }
+
+    /**
+     * @param mixed $deliveryType
+     */
+    public function setDeliveryType($deliveryType)
+    {
+        $this->deliveryType = $deliveryType;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getDeliveryType()
+    {
+        return $this->deliveryType;
+    }
+
+    /**
+     * @param mixed $description
+     */
+    public function setDescription($description)
+    {
+        $this->description = $description;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getDescription()
+    {
+        return $this->description;
+    }
+
+    /**
+     * @param mixed $distance
+     */
+    public function setDistance($distance)
+    {
+        $this->distance = $distance;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getDistance()
+    {
+        return $this->distance;
+    }
+
+    /**
+     * @param mixed $meetingTime
+     */
+    public function setMeetingTime($meetingTime)
+    {
+        $this->meetingTime = $meetingTime;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getMeetingTime()
+    {
+        return $this->meetingTime;
+    }
+
+    /**
+     * @param \KeineWaste\Dto\Product[] $products
+     */
+    public function setProducts($products)
+    {
+        $this->products = $products;
+    }
+
+    /**
+     * @return \KeineWaste\Dto\Product[]
+     */
+    public function getProducts()
+    {
+        return $this->products;
+    }
+
+    /**
+     * @param mixed $status
+     */
+    public function setStatus($status)
+    {
+        $this->status = $status;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getStatus()
+    {
+        return $this->status;
+    }
+
+
+
 }
