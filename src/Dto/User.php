@@ -2,6 +2,7 @@
 namespace KeineWaste\Dto;
 
 use Doctrine\Common\Collections\ArrayCollection;
+use Pseudo\Exception;
 
 /**
  * @Entity
@@ -10,17 +11,19 @@ use Doctrine\Common\Collections\ArrayCollection;
 class User extends Dto implements \JsonSerializable
 {
 
-    function __construct($address, $bio, $companyName, $email, $name, $type, $imageUrl, $offers = null, $createdAt = null)
+    const USER_TYPE_DONOR = "donor";
+    const USER_TYPE_RECEIVER = "receiver";
+
+
+    function __construct($facebookId, $email, $name, $createdAt = null)
     {
-        $this->address = $address;
-        $this->bio = $bio;
-        $this->companyName = $companyName;
-        $this->createdAt = $createdAt ? $createdAt : new \DateTime("now");
-        $this->email = $email;
-        $this->imageUrl = $imageUrl;
-        $this->name = $name;
-        $this->offers = $offers ? $offers : new ArrayCollection();
-        $this->type = $type;
+
+        $this->facebookId = $facebookId;
+        $this->email      = $email;
+        $this->name       = $name;
+        $this->type       = static::USER_TYPE_RECEIVER;
+        $this->offers     = new ArrayCollection();
+        $this->createdAt  = $createdAt ? $createdAt : new \DateTime("now");
     }
 
     public function jsonSerialize()
@@ -31,16 +34,16 @@ class User extends Dto implements \JsonSerializable
         }
 
         return [
-            'id' => $this->id,
-            'name' => $this->name,
-            'address' => $this->address,
+            'id'          => $this->id,
+            'name'        => $this->name,
+            'address'     => $this->address,
             'companyName' => $this->companyName,
-            'email' => $this->email,
-            'bio' => $this->bio,
-            'type' => $this->type,
-            'imageUrl' => $this->imageUrl,
-            'offers' => $offers,
-            'createdAt' => $this->createdAt,
+            'email'       => $this->email,
+            'bio'         => $this->bio,
+            'type'        => $this->type,
+            'offers'      => $offers,
+            'createdAt'   => $this->createdAt,
+            'imageUrl'    => $this->getProfilePicture()
         ];
     }
 
@@ -49,6 +52,12 @@ class User extends Dto implements \JsonSerializable
      * @var int $id
      */
     protected $id;
+
+    /**
+     * @Column(type="bigint", name="facebook_id", unique=true)
+     * @var int
+     */
+    protected $facebookId;
 
     /**
      * @var Offer[] $offers
@@ -63,34 +72,29 @@ class User extends Dto implements \JsonSerializable
     protected $name;
 
     /**
-     * @Column(type="string")
+     * @Column(type="string", nullable=true)
      * @var string
      */
     protected $companyName;
 
     /**
-     * @Column(type="string")
+     * @Column(type="string", nullable=true)
      * @var string
      */
     protected $address;
 
     /**
-     * @Column(type="string")
+     * @Column(type="string", nullable=true)
      * @var string
      */
     protected $type;
 
     /**
-     * @Column(type="text")
+     * @Column(type="text", nullable=true)
      * @var string
      */
     protected $bio;
 
-    /**
-     * @Column(type="string")
-     * @var string
-     */
-    protected $imageUrl;
 
     /**
      * @Column(type="datetime", name="posted_at")
@@ -104,6 +108,12 @@ class User extends Dto implements \JsonSerializable
     protected $email;
 
     /**
+     * @Column(type="text", name="token")
+     * @var string
+     */
+    protected $token = null;
+
+    /**
      * @OneToMany(targetEntity="Message", mappedBy="sender")
      * @var Message[]
      */
@@ -114,6 +124,12 @@ class User extends Dto implements \JsonSerializable
      * @var Message[]
      */
     protected $receivedMessages;
+
+
+    /**
+     * @var string
+     */
+    protected $profilePicture;
 
     /**
      * @return int
@@ -131,6 +147,7 @@ class User extends Dto implements \JsonSerializable
         return $this->createdAt;
     }
 
+
     /**
      * @return string
      */
@@ -146,6 +163,63 @@ class User extends Dto implements \JsonSerializable
     {
         $this->email = $email;
     }
+
+    /**
+     * @return string
+     */
+    public function getToken()
+    {
+        return $this->token;
+    }
+
+    /**
+     * @param string $token
+     */
+    public function setToken($token)
+    {
+        $this->token = $token;
+    }
+
+    /**
+     * @return string
+     */
+    public function getName()
+    {
+        return $this->name;
+    }
+
+    /**
+     * @param string $name
+     */
+    public function setName($name)
+    {
+        $this->name = $name;
+    }
+
+    public function isIndividual()
+    {
+        return $this->type === null;
+    }
+
+    /**
+     * @return string
+     */
+    public function getProfilePicture()
+    {
+        if ($this->isIndividual()) {
+            return $this->profilePicture;
+        }
+        return null;
+    }
+
+    /**
+     * @param string $profilePicture
+     */
+    public function setProfilePicture($profilePicture)
+    {
+        $this->profilePicture = $profilePicture;
+    }
+
 
     /**
      * @param string $address
@@ -212,22 +286,6 @@ class User extends Dto implements \JsonSerializable
     }
 
     /**
-     * @param string $name
-     */
-    public function setName($name)
-    {
-        $this->name = $name;
-    }
-
-    /**
-     * @return string
-     */
-    public function getName()
-    {
-        return $this->name;
-    }
-
-    /**
      * @param \KeineWaste\Dto\Offer[] $offers
      */
     public function setOffers($offers)
@@ -244,10 +302,15 @@ class User extends Dto implements \JsonSerializable
     }
 
     /**
-     * @param string $type
+     * @param $type
+     *
+     * @throws Exception
      */
     public function setType($type)
     {
+        if ($type !== static::USER_TYPE_RECEIVER && $type != static::USER_TYPE_DONOR) {
+            throw new Exception("User type is invalid");
+        }
         $this->type = $type;
     }
 

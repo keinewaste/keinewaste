@@ -12,6 +12,9 @@ parameters:
     aws.secret_access_key: @aws.secret_access_key@
     aws.ses.region: 'eu-west-1'
 
+    fb.appid: @fb.appid@
+    fb.secret: @fb.secret@
+
     mailing.from: 'hackathon <info@reputat.io>'
 
     app.config: &app.config
@@ -149,8 +152,18 @@ services:
         class: "Monolog\\Processor\\MemoryPeakUsageProcessor"
 
 
-#Doctrine
+#Facebook Login
+    FacebookSDK:
+        class: "Facebook\\Facebook"
+        lazy: false
+        public: false
+        arguments:
+          -
+            app_id:                 '%fb.appid%'
+            app_secret:             '%fb.secret%'
+            default_graph_version:  'v2.2'
 
+#Doctrine
     DoctrineSQLLogger:
         class: "Cobaia\\Doctrine\\MonologSQLLogger"
         lazy: false
@@ -288,6 +301,7 @@ services:
         calls:
          - [setResponse, ['@PingDefaultResponse']]
          - [setConfig, ['@PingControllerConfig']]
+         - [setUserService, ['@UserService']]
 
     UserController:
         class: "KeineWaste\\Controllers\\UserController"
@@ -298,6 +312,7 @@ services:
         calls:
          - [setResponse, ['@DefaultResponse']]
          - [setConfig, ['@DefaultControllerConfig']]
+         - [setUserService, ['@UserService']]
 
     UsersController:
         class: "KeineWaste\\Controllers\\UsersController"
@@ -308,6 +323,7 @@ services:
         calls:
          - [setResponse, ['@DefaultResponse']]
          - [setConfig, ['@DefaultControllerConfig']]
+         - [setUserService, ['@UserService']]
 
     MarketController:
         class: "KeineWaste\\Controllers\\MarketController"
@@ -328,6 +344,7 @@ services:
         calls:
          - [setResponse, ['@DefaultResponse']]
          - [setConfig, ['@DefaultControllerConfig']]
+         - [setUserService, ['@UserService']]
 
     AutocompleteController:
         class: "KeineWaste\\Controllers\\AutocompleteController"
@@ -338,6 +355,8 @@ services:
         calls:
          - [setResponse, ['@DefaultResponse']]
          - [setConfig, ['@DefaultControllerConfig']]
+         - [setUserService, ['@UserService']]
+
 
     MessagesController:
         class: "KeineWaste\\Controllers\\MessagesController"
@@ -349,6 +368,7 @@ services:
         calls:
          - [setResponse, ['@DefaultResponse']]
          - [setConfig, ['@DefaultControllerConfig']]
+         - [setUserService, ['@UserService']]
 
 # Services
 
@@ -394,8 +414,10 @@ services:
         public: false
         arguments:
           - '@UserRepository'
+          - '@FacebookSDK'
         calls:
           - [setLogger, ['@Logger']]
+          - [setMemcached, ['@MemcachedConnection']]
 
 
     MessageRepository:

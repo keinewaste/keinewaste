@@ -35,3 +35,4 @@ ant test
 aws cloudformation create-stack --capabilities=CAPABILITY_IAM --stack-name KeineWasteAPI --template-body file://${PWD}/aws/resources.json --parameters ParameterKey=ApiAMI,ParameterValue=ami-80bf3ef3 ParameterKey=DefaultVpc,ParameterValue=vpc-a6f773c3
 ```
 
+

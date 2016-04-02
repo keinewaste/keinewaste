@@ -2,12 +2,23 @@
 
 namespace KeineWaste\Controllers\Base;
 
+use KeineWaste\Services\UserService;
+use Pseudo\Exception;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 use KeineWaste\Config\General as GeneralConfig;
 
 trait BaseTrait
 {
+
+    /**
+     * @var UserService
+     */
+    protected $userService;
+
+
     /**
      * @var JsonResponse
      */
@@ -17,7 +28,6 @@ trait BaseTrait
      * @var GeneralConfig
      */
     protected $config;
-
 
     /**
      * Set Response
@@ -95,5 +105,45 @@ trait BaseTrait
     {
         $message = 'Exception: ' . $errorCode;
         return $message;
+    }
+
+    /**
+     * @param UserService $userService
+     */
+    public function setUserService($userService)
+    {
+        $this->userService = $userService;
+    }
+
+
+    /**
+     * Generate token from request.
+     *
+     * @param Request $request The request.
+     *
+     * @return string
+     */
+    protected function getToken(Request $request)
+    {
+        $token_string = str_replace('Bearer ', '', $request->headers->get('Authorization'));
+        if (null !== ($token_from_query = $request->query->get('access_token'))) {
+            $token_string = $token_from_query;
+        }
+
+        return $token_string;
+    }
+
+
+    protected function getLoggedUser(Request $request, $allowAnonymous = false)
+    {
+        if (null == $this->userService) {
+            throw new Exception("User Service is not set");
+        }
+
+        $loggedUser = $this->userService->getUserByToken($this->getToken($request));
+        if ($allowAnonymous === false && $loggedUser === null) {
+            throw new AccessDeniedHttpException();
+        }
+        return $loggedUser;
     }
 }
