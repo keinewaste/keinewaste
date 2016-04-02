@@ -80,6 +80,27 @@ services:
         class: "Silex\\Provider\\ServiceControllerServiceProvider"
         public: false
 
+    PdoConnection:
+        class: Pdo
+        lazy: false
+        arguments:
+            - '%mysql.dsn%'
+            - '%mysql.user%'
+            - '%mysql.password%'
+
+    MemcachedConnection:
+        class: "Memcached"
+        public: false
+        calls:
+          -
+            - setOptions
+            -
+              -
+                16: true #OPT_LIBKETAMA_COMPATIBLE
+                15: 1 #OPT_RETRY_TIMEOUT
+                14: 20 #OPT_CONNECT_TIMEOUT
+          - [addServers, ['%memcached.servers%']]
+
 # Logger
     Logger:
         class: "Monolog\\Logger"
@@ -118,6 +139,64 @@ services:
         class: "Monolog\\Processor\\MemoryPeakUsageProcessor"
 
 
+#Doctrine
+
+    DoctrineSQLLogger:
+        class: "Cobaia\\Doctrine\\MonologSQLLogger"
+        lazy: false
+        public: false
+        arguments:
+          - null
+          - '@Logger.fileHandler'
+
+    DoctrineArrayCache:
+        class: "Doctrine\\Common\\Cache\\ArrayCache"
+        lazy: false
+        public: false
+
+    DoctrineMemcachedDriver:
+        class: "Doctrine\\Common\\Cache\\MemcachedCache"
+        lazy: false
+        public: false
+        calls:
+          - [setMemcached, ['@MemcachedConnection']]
+
+    DoctrineCacheChain:
+        class: "Doctrine\\Common\\Cache\\ChainCache"
+        public: false
+        lazy: false
+        arguments:
+          -
+            - '@DoctrineArrayCache'
+            - '@DoctrineMemcachedDriver'
+
+    DoctrineAnnotations:
+        class: "Doctrine\\ORM\\Configuration"
+        factory: ["Doctrine\\ORM\\Tools\\Setup", "createAnnotationMetadataConfiguration"]
+        public: false
+        lazy: false
+        arguments:
+          -
+            - '%root.path%/src/Dto'
+          - "%app.debug%"
+        calls:
+          - [setResultCacheImpl, ['@DoctrineCacheChain']]
+          - [setQueryCacheImpl, ['@DoctrineCacheChain']]
+          - [setMetadataCacheImpl, ['@DoctrineCacheChain']]
+          - [setProxyDir, ['%root.path%/src/Dto/Proxy']]
+          - [setProxyNamespace, ["KeineWaste\\Dto\\Proxy"]]
+          - [setAutoGenerateProxyClasses, [%doctrine.autogenerate_proxies%]]
+          - [setSQLLogger, ['@DoctrineSQLLogger']]
+
+
+    DoctrineEntityManager:
+        class: "Doctrine\\ORM\\EntityManager"
+        public: true
+        factory: ["Doctrine\\ORM\\EntityManager", "create"]
+        arguments:
+          -
+            pdo: '@PdoConnection'
+          - '@DoctrineAnnotations'
 
 
 #Controllers
