@@ -12,3 +12,10 @@ vagrant up
 Default mysql login:
 user: root
 password: no password
+
+
+To build:
+
+```
+ant build -Denv=dev
+```

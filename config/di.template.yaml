@@ -1,0 +1,151 @@
+parameters:
+    logger.file: @log.file@
+    logger.level: @log.level@
+    logger.channel: "keinewaste"
+    app.debug: @app.debug@
+    http_cache: false
+
+    cache-control.ping: "public, no-cache"
+    cache-control.users: "public, no-cache"
+
+    aws.access_key_id: @aws.access_key_id@
+    aws.secret_access_key: @aws.secret_access_key@
+    aws.ses.region: 'eu-west-1'
+
+    mailing.from: 'hackathon <info@hackathon.org>'
+
+    app.config: &app.config
+      api.locale.defaultAppDomain: "1"
+      api.locale.defaultLocale: "tr_TR"
+      api.locale.allowedlist: {"tr_TR": 1}
+
+
+    rest.defaults: &rest.defaults
+      <<: *app.config
+      limit: "30"
+      offset: "0"
+      ttl: "300"
+
+    rest.ping.defaults:
+      <<: *rest.defaults
+
+    rest.entries.defaults:
+      <<: *rest.defaults
+
+    rest.users.defaults:
+      <<: *rest.defaults
+
+    rest.messages.defaults:
+      <<: *rest.defaults
+
+    rest.notificationHandler.defaults:
+      <<: *rest.defaults
+
+    memcached.servers:
+      @memcached.servers.1@
+      @memcached.servers.2@
+      @memcached.servers.3@
+      @memcached.servers.4@
+      @memcached.servers.5@
+      @memcached.servers.6@
+
+    mysql.dsn: @mysql.dsn@
+    mysql.host: @mysql.host@
+    mysql.port: @mysql.port@
+    mysql.charset: @mysql.charset@
+    mysql.user: @mysql.user@
+    mysql.password: @mysql.password@
+
+    root.path: @project.root@
+
+    doctrine.autogenerate_proxies: @doctrine.autogenerate_proxies@
+
+
+
+services:
+    # Application
+    App:
+        class: "KeineWaste\\Application\\Application"
+        arguments:
+         -
+            debug                 : '%app.debug%'
+            cache                 : '%http_cache%'
+            controllers.ping      : '@PingController'
+
+        calls:
+         - [register, ['@ServiceControllerServiceProvider']]
+
+
+    ServiceControllerServiceProvider:
+        class: "Silex\\Provider\\ServiceControllerServiceProvider"
+        public: false
+
+# Logger
+    Logger:
+        class: "Monolog\\Logger"
+        public: true
+        arguments:
+          - '%logger.channel%'
+        calls:
+          - [pushHandler, ['@Logger.fileHandler']]
+          - [pushProcessor, ['@Logger.memoryPeakUsageProcessor']]
+
+    Logger.fileHandler:
+        class: "Monolog\\Handler\\StreamHandler"
+        public: false
+        arguments:
+          - '%logger.file%'
+          - '%logger.level%'
+        calls:
+          - [setFormatter, ['@Logger.formatter']]
+          - [setFormatter, ['@Logger.formatter.color']]
+
+    Logger.formatter:
+        class: "Monolog\\Formatter\\LineFormatter"
+        public: false
+        arguments:
+          - null
+          - null
+          - true
+        calls:
+          - [includeStacktraces]
+
+    Logger.formatter.color:
+        class: "Bramus\\Monolog\\Formatter\\ColoredLineFormatter"
+        public: false
+
+    Logger.memoryPeakUsageProcessor:
+        class: "Monolog\\Processor\\MemoryPeakUsageProcessor"
+
+
+
+
+#Controllers
+
+    #Ping Controller
+    PingControllerConfig:
+        class: "KeineWaste\\Config\\Endpoint"
+        lazy: true
+        public: false
+        arguments:
+         - # Properties
+           '%rest.ping.defaults%'
+        lazy: true
+
+    PingDefaultResponse:
+        class: "Symfony\\Component\\HttpFoundation\\JsonResponse"
+        lazy: true
+        public: false
+        arguments:
+         - ""
+         - 200
+         -
+           Cache-Control : "%cache-control.ping%"
+
+    PingController:
+        class: "KeineWaste\\Controllers\\PingController"
+        lazy: true
+        public: false
+        calls:
+         - [setResponse, ['@PingDefaultResponse']]
+         - [setConfig, ['@PingControllerConfig']]

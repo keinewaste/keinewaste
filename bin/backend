@@ -1,0 +1,19 @@
+#!/usr/bin/env php
+<?php
+set_time_limit(0);
+date_default_timezone_set('Europe/Berlin');
+
+if (file_exists(__DIR__ . '/../src/di.php')) {
+    $diContainer = include_once(__DIR__ . '/../src/di.php');
+}
+use Symfony\Component\Console\Application;
+
+$application = new Application();
+$application->add(new \KeineWaste\Console\BuildTask());
+if ($diContainer) {
+    /**
+     * Any service can be added here
+     */
+    //$application->add($diContainer->get('AnyService'));
+}
+$application->run();
