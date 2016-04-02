@@ -282,7 +282,7 @@ services:
         lazy: true
         public: false
         arguments:
-         - '@DoctrineEntityManager'
+         - '@UserService'
         calls:
          - [setResponse, ['@DefaultResponse']]
          - [setConfig, ['@DefaultControllerConfig']]
@@ -292,7 +292,7 @@ services:
         lazy: true
         public: false
         arguments:
-         - '@DoctrineEntityManager'
+         - '@UserService'
         calls:
          - [setResponse, ['@DefaultResponse']]
          - [setConfig, ['@DefaultControllerConfig']]
@@ -328,7 +328,7 @@ services:
             credentials : '@AwsCommonCredentialsCredentials'
 
     MailingService:
-        class: "Instela\\Services\\Notification\\MailingService"
+        class: "KeineWaste\\Services\\MailingService"
         lazy: true
         public: false
         arguments:
@@ -336,3 +336,23 @@ services:
           - '%mailing.from%'
         calls:
           - [setLogger, ['@Logger']]
+
+    UserDoctrineRepository:
+        class: "KeineWaste\\Services\\Repository\\UserRepository"
+        lazy: false
+        public: false
+        arguments:
+          - '@DoctrineEntityManager'
+        calls:
+          - [setLogger, ['@Logger']]
+
+    UserService:
+        class: "KeineWaste\\Services\\UserService"
+        lazy: true
+        public: false
+        arguments:
+          - '@UserDoctrineRepository'
+        calls:
+          - [setLogger, ['@Logger']]
+
+

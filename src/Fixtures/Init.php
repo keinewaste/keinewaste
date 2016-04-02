@@ -15,6 +15,7 @@ class Init implements FixtureInterface
         $user = new User(
             new \DateTime('2016-04-02 12:58:29'),
             'Mark Sugarmountain',
+            'info@sugar.com',
             []
         );
 

@@ -9,10 +9,11 @@ use Doctrine\Common\Collections\ArrayCollection;
  **/
 class User extends Dto implements \JsonSerializable
 {
-    function __construct($createdAt, $name, $offers = null)
+    function __construct($createdAt, $name, $email, $offers = null)
     {
         $this->createdAt = $createdAt;
         $this->name      = $name;
+        $this->email     = $email;
         $this->offers    = $offers ? $offers : new ArrayCollection();
     }
 

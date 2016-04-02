@@ -3,8 +3,9 @@
 
 namespace KeineWaste\Controllers;
 
-use Doctrine\ORM\EntityManagerInterface;
 use KeineWaste\Controllers\Base\BaseTrait;
+use KeineWaste\Services\UserService;
+use Psr\Log\LoggerAwareTrait;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 
@@ -12,13 +13,16 @@ use Symfony\Component\HttpFoundation\Request;
 class UsersController
 {
     use BaseTrait;
+    use LoggerAwareTrait;
 
-    /** @var EntityManagerInterface $em */
-    protected $em;
+    /**
+     * @var UserService
+     */
+    protected $userService;
 
-    function __construct(EntityManagerInterface $em)
+    function __construct(UserService $userService)
     {
-        $this->em = $em;
+        $this->userService = $userService;
     }
 
     /**
@@ -31,11 +35,8 @@ class UsersController
      */
     public function getAction(Request $request)
     {
-        $userRepository = $this->em->getRepository('KeineWaste\Dto\User');
-        $users = $userRepository->findAll();
-
         return $this
             ->getResponse()
-            ->setData($users);
+            ->setData($this->userService->getUsers());
     }
 }
