@@ -1,6 +1,7 @@
 <?php
 namespace KeineWaste\Services;
 
+use Doctrine\Bundle\DoctrineCacheBundle\Tests\Functional\Fixtures\Memcached;
 use Facebook\Exceptions\FacebookAuthenticationException;
 use Facebook\Facebook;
 use KeineWaste\Dto\Dto;
@@ -15,6 +16,9 @@ class UserService
 {
 
     use LoggerAwareTrait;
+    use CacheableTrait;
+
+    const CACHE_TTL = 60;
 
     /**
      * @var UserRepository $repository
@@ -130,13 +134,32 @@ class UserService
 
     protected function getFacebookData(DtoUser $user)
     {
-        return $this->fbClient->get('me?fields=id,email,name,picture', $user->getToken())->getGraphUser();
+
+        $ck = 'fb_data' . md5($user->getId());
+
+        $fbUser = $this->memcached->get($ck);
+
+        if ($this->memcached->getResultCode() === Memcached::RES_NOTFOUND) {
+            $fbUser = $this->fbClient->get('me?fields=id,email,name,picture', $user->getToken())->getGraphUser();
+            $this->memcached->set($ck, $fbUser, static::CACHE_TTL);
+        }
+
+        return $fbUser;
     }
 
     protected function getFacebookUserByToken($token)
     {
         try {
-            return $this->fbClient->get('me?fields=id,email,name,picture', $token)->getGraphUser();
+            $ck = 'fb_user_' . md5($token);
+
+            $user = $this->memcached->get($ck);
+
+            if ($this->memcached->getResultCode() === Memcached::RES_NOTFOUND) {
+                $user = $this->fbClient->get('me?fields=id,email,name,picture', $token)->getGraphUser();
+                $this->memcached->set($ck, $user, static::CACHE_TTL);
+            }
+
+            return $user;
         } catch (\Exception $e) {
             return null;
         }

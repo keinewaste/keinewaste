@@ -400,6 +400,7 @@ services:
           - '@FacebookSDK'
         calls:
           - [setLogger, ['@Logger']]
+          - [setMemcached, ['@MemcachedConnection']]
 
 
     MessageRepository:
