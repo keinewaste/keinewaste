@@ -7,7 +7,7 @@ use Symfony\Bridge\ProxyManager\LazyProxy\PhpDumper\ProxyDumper as DiProxyDumper
 use Symfony\Component\DependencyInjection\Dumper\PhpDumper as DiPhpDumper;
 use Doctrine\Common\Proxy\Autoloader;
 use Doctrine\DBAL\Types\Type;
-use Instela\Helpers\Types\UTCDateTimeType;
+use KeineWaste\Helpers\Types\UTCDateTimeType;
 
 require_once __DIR__ . '/../vendor/autoload.php';
 if (!defined('PROJECT_PATH')) {
