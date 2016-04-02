@@ -12,7 +12,7 @@ addons:
   hosts:
     - api.local.keinewaste.org
 
-script: vendor/bin/codecept run
+script: vendor/bin/codecept run unit
 
 notifications:
   slack: hackerstolz-community:Z5iWPCZHRCQPu1Cqmjh1KtLX
