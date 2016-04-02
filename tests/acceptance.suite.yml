@@ -1,0 +1,15 @@
+# Codeception Test Suite Configuration
+#
+# Suite for acceptance tests.
+# Perform tests in browser using the WebDriver or PhpBrowser.
+# If you need both WebDriver and PHPBrowser tests - create a separate suite.
+
+class_name: AcceptanceTester
+modules:
+    enabled:
+        - PhpBrowser:
+            url: http://api.local.keinewaste.org/v1
+        - REST:
+            depends: PhpBrowser
+            url: http://api.local.keinewaste.org/v1
+        - \Helper\Acceptance
