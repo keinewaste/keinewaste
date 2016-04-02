@@ -24,6 +24,11 @@
       "Type": "String",
       "Description": "Route 53 Hosted Zone",
       "Default": "Z2FBI7948PAAOA"
+    },
+    "DBName": {
+      "Type": "String",
+      "Description": "Database Name",
+      "Default": "keinewaste"
     }
   },
   "Mappings": {
@@ -177,7 +182,7 @@
           "HealthyThreshold": "3",
           "Interval": "5",
           "Target": "HTTP:80/v1/ping",
-          "Timeout": "5",
+          "Timeout": "3",
           "UnhealthyThreshold": "2"
         },
         "SecurityGroups": [
@@ -195,6 +200,60 @@
           }
         ]
       }
+    },
+    "ElasticacheSecurityGroup": {
+      "Type": "AWS::EC2::SecurityGroup",
+      "Properties": {
+        "GroupDescription": "Elasticache Security Group",
+        "VpcId": {
+          "Ref": "DefaultVpc"
+        },
+        "SecurityGroupIngress": [
+          {
+            "IpProtocol": "tcp",
+            "FromPort": "11211",
+            "ToPort": "11211",
+            "SourceSecurityGroupId": {
+              "Fn::GetAtt": [
+                "SecurityGroup",
+                "GroupId"
+              ]
+            }
+          }
+        ]
+      }
+    },
+    "ElasticacheCluster": {
+      "Type": "AWS::ElastiCache::CacheCluster",
+      "Properties": {
+        "AutoMinorVersionUpgrade": "true",
+        "Engine": "memcached",
+        "CacheNodeType": "cache.t1.micro",
+        "NumCacheNodes": "1",
+        "VpcSecurityGroupIds": [
+          {
+            "Fn::GetAtt": [
+              "ElasticacheSecurityGroup",
+              "GroupId"
+            ]
+          }
+        ]
+      }
+    },
+    "Database": {
+      "Type": "AWS::RDS::DBInstance",
+      "Properties": {
+        "DBName": {
+          "Ref": "DBName"
+        },
+        "AllocatedStorage": "100",
+        "DBInstanceClass": "db.t2.micro",
+        "Engine": "MySQL",
+        "EngineVersion": "5.5",
+        "MasterUsername": "keinewaste",
+        "MasterUserPassword": "keinewaste"
+      },
+      "DeletionPolicy": "Snapshot"
     },
     "APIDNSRecord": {
       "Type": "AWS::Route53::RecordSet",
@@ -223,5 +282,14 @@
     }
   },
   "Outputs": {
+    "ElasticCacheDNSName": {
+      "Description": "ElasticCache DNS Name",
+      "Value": {
+        "Fn::GetAtt": [
+          "ElasticacheCluster",
+          "ConfigurationEndpoint.Address"
+        ]
+      }
+    }
   }
 }
