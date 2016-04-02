@@ -11,3 +11,6 @@ before_script:
   - ant -Denv=travis
 
 script: vendor/bin/codecept run
+
+notifications:
+  slack: hackerstolz-community:Z5iWPCZHRCQPu1Cqmjh1KtLX
