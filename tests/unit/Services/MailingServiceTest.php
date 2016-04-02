@@ -12,7 +12,7 @@ class MailingServiceTest extends \PHPUnit_Framework_TestCase
 
     public function testSendMail()
     {
-        $user = new User(new \DateTime(), "cagatay");
+        $user = new User(new \DateTime(), "cagatay", "fonturus@gmail.com");
         $user->setEmail("fonturus@gmail.com");
 
         /** @var SesClient|\PHPUnit_Framework_MockObject_MockObject $sesClient */

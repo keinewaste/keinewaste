@@ -3,38 +3,49 @@
 
 namespace KeineWaste\Controllers;
 
-use Doctrine\ORM\EntityManagerInterface;
 use KeineWaste\Controllers\Base\BaseTrait;
+use KeineWaste\Services\UserService;
+use Psr\Log\LoggerAwareTrait;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 
 class UserController
 {
     use BaseTrait;
+    use LoggerAwareTrait;
 
-    /** @var EntityManagerInterface $em */
-    protected $em;
+    /**
+     * @var UserService
+     */
+    protected $userService;
 
-    function __construct(EntityManagerInterface $em)
+    function __construct(UserService $userService)
     {
-        $this->em = $em;
+        $this->userService = $userService;
     }
 
     /**
-     * User action
-     *
-     * @param Request $request Request
+     * @param Request $request
      *
      * @return JsonResponse
+     * @throws NotFoundHttpException
      * @throws \Exception
      */
     public function getAction(Request $request)
     {
-        $user = $this->em->find('KeineWaste\Dto\User', 3);
+
+        $user = $this->userService->getUserById($request->get('id'));
+
+        if (null === $user) {
+            throw new NotFoundHttpException();
+        }
 
         return $this
             ->getResponse()
-            ->setData($user);
+            ->setData(
+                $user
+            );
     }
 }

@@ -72,11 +72,12 @@ services:
         class: "KeineWaste\\Application\\Application"
         arguments:
          -
-            debug                 : '%app.debug%'
-            cache                 : '%http_cache%'
-            controllers.ping      : '@PingController'
-            controllers.user      : '@UserController'
-            controllers.users     : '@UsersController'
+            debug                    : '%app.debug%'
+            cache                    : '%http_cache%'
+            controllers.ping         : '@PingController'
+            controllers.user         : '@UserController'
+            controllers.users        : '@UsersController'
+            controllers.messages     : '@MessagesController'
             controllers.categories : '@CategoriesController'
             controllers.autocomplete : '@AutocompleteController'
 
@@ -286,7 +287,7 @@ services:
         lazy: true
         public: false
         arguments:
-         - '@DoctrineEntityManager'
+         - '@UserService'
         calls:
          - [setResponse, ['@DefaultResponse']]
          - [setConfig, ['@DefaultControllerConfig']]
@@ -296,7 +297,7 @@ services:
         lazy: true
         public: false
         arguments:
-         - '@DoctrineEntityManager'
+         - '@UserService'
         calls:
          - [setResponse, ['@DefaultResponse']]
          - [setConfig, ['@DefaultControllerConfig']]
@@ -321,6 +322,16 @@ services:
          - [setResponse, ['@DefaultResponse']]
          - [setConfig, ['@DefaultControllerConfig']]
 
+    MessagesController:
+        class: "KeineWaste\\Controllers\\MessagesController"
+        lazy: true
+        public: false
+        arguments:
+         - '@MessageService'
+         - '@UserService'
+        calls:
+         - [setResponse, ['@DefaultResponse']]
+         - [setConfig, ['@DefaultControllerConfig']]
 
 # Services
 
@@ -342,7 +353,7 @@ services:
             credentials : '@AwsCommonCredentialsCredentials'
 
     MailingService:
-        class: "Instela\\Services\\Notification\\MailingService"
+        class: "KeineWaste\\Services\\MailingService"
         lazy: true
         public: false
         arguments:
@@ -350,3 +361,41 @@ services:
           - '%mailing.from%'
         calls:
           - [setLogger, ['@Logger']]
+
+    UserRepository:
+        class: "KeineWaste\\Services\\Repository\\UserRepository"
+        lazy: false
+        public: false
+        arguments:
+          - '@DoctrineEntityManager'
+        calls:
+          - [setLogger, ['@Logger']]
+
+    UserService:
+        class: "KeineWaste\\Services\\UserService"
+        lazy: true
+        public: false
+        arguments:
+          - '@UserRepository'
+        calls:
+          - [setLogger, ['@Logger']]
+
+
+    MessageRepository:
+        class: "KeineWaste\\Services\\Repository\\MessageRepository"
+        lazy: false
+        public: false
+        arguments:
+          - '@DoctrineEntityManager'
+        calls:
+          - [setLogger, ['@Logger']]
+
+    MessageService:
+        class: "KeineWaste\\Services\\MessageService"
+        lazy: true
+        public: false
+        arguments:
+          - '@MessageRepository'
+        calls:
+          - [setLogger, ['@Logger']]
+

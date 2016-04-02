@@ -104,6 +104,18 @@ class User extends Dto implements \JsonSerializable
     protected $email;
 
     /**
+     * @OneToMany(targetEntity="Message", mappedBy="sender")
+     * @var Message[]
+     */
+    protected $sentMessages;
+
+    /**
+     * @OneToMany(targetEntity="Message", mappedBy="receiver")
+     * @var Message[]
+     */
+    protected $receivedMessages;
+
+    /**
      * @return int
      */
     public function getId()
