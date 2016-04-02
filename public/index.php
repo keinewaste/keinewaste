@@ -57,6 +57,23 @@ $app->error(
     $controllerExceptionHandler
 );
 
+$app->before(
+    function (\Symfony\Component\HttpFoundation\Request $request, \KeineWaste\Application\Application $app) {
+        if ($request->getMethod() == 'OPTIONS') {
+            $response = new \Symfony\Component\HttpFoundation\Response();
+            $response->headers->add(
+                [
+                    'Access-Control-Allow-Origin'  => '*',
+                    'Access-Control-Allow-Methods' => 'GET, PUT, DELETE, OPTIONS, POST',
+
+                ]
+            );
+            return $response
+                ->setStatusCode(200);
+        }
+    }
+);
+
 $app->after(
     function (\Symfony\Component\HttpFoundation\Request $request, \Symfony\Component\HttpFoundation\Response $response) {
         $response->headers->add(
