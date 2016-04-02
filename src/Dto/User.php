@@ -2,6 +2,7 @@
 namespace KeineWaste\Dto;
 
 use Doctrine\Common\Collections\ArrayCollection;
+use Pseudo\Exception;
 
 /**
  * @Entity
@@ -10,6 +11,9 @@ use Doctrine\Common\Collections\ArrayCollection;
 class User extends Dto implements \JsonSerializable
 {
 
+    const USER_TYPE_DONOR = "donor";
+    const USER_TYPE_RECEIVER = "receiver";
+
 
     function __construct($facebookId, $email, $name, $createdAt = null)
     {
@@ -17,9 +21,9 @@ class User extends Dto implements \JsonSerializable
         $this->facebookId = $facebookId;
         $this->email      = $email;
         $this->name       = $name;
-
-        $this->offers    = new ArrayCollection();
-        $this->createdAt = $createdAt ? $createdAt : new \DateTime("now");
+        $this->type       = static::USER_TYPE_RECEIVER;
+        $this->offers     = new ArrayCollection();
+        $this->createdAt  = $createdAt ? $createdAt : new \DateTime("now");
     }
 
     public function jsonSerialize()
@@ -298,10 +302,15 @@ class User extends Dto implements \JsonSerializable
     }
 
     /**
-     * @param string $type
+     * @param $type
+     *
+     * @throws Exception
      */
     public function setType($type)
     {
+        if ($type !== static::USER_TYPE_RECEIVER && $type != static::USER_TYPE_DONOR) {
+            throw new Exception("User type is invalid");
+        }
         $this->type = $type;
     }
 
