@@ -1,6 +1,6 @@
 {
   "AWSTemplateFormatVersion": "2010-09-09",
-  "Description": "Keine Waste AWS Stack For API",
+  "Description": "Keine Waste AWS Stack For Frontend",
   "Parameters": {
     "KeyPair": {
       "Type": "AWS::EC2::KeyPair::KeyName",
@@ -115,7 +115,7 @@
         "Tags": [
           {
             "Key": "Name",
-            "Value": "KeineWaste API",
+            "Value": "KeineWaste Frontend",
             "PropagateAtLaunch": "true"
           }
         ],
@@ -174,7 +174,7 @@
         "HealthCheck": {
           "HealthyThreshold": "3",
           "Interval": "5",
-          "Target": "HTTP:80/v1/ping",
+          "Target": "HTTP:80/",
           "Timeout": "3",
           "UnhealthyThreshold": "2"
         },
@@ -215,7 +215,32 @@
         "HostedZoneId": {
           "Ref": "HostedZoneId"
         },
-        "Name": "api.keinewaste.org",
+        "Name": "keinewaste.org",
+        "Type": "A"
+      }
+    },
+    "FrontendDNSRecordWWW": {
+      "Type": "AWS::Route53::RecordSet",
+      "Properties": {
+        "AliasTarget": {
+          "DNSName": {
+            "Fn::GetAtt": [
+              "FrontendELB",
+              "DNSName"
+            ]
+          },
+          "HostedZoneId": {
+            "Fn::GetAtt": [
+              "FrontendELB",
+              "CanonicalHostedZoneNameID"
+            ]
+          }
+        },
+        "Comment": "API ELB",
+        "HostedZoneId": {
+          "Ref": "HostedZoneId"
+        },
+        "Name": "www.keinewaste.org",
         "Type": "A"
       }
     }

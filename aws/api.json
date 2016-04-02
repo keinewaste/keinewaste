@@ -1,6 +1,6 @@
 {
   "AWSTemplateFormatVersion": "2010-09-09",
-  "Description": "Keine Waste AWS Stack",
+  "Description": "Keine Waste AWS Stack For API",
   "Parameters": {
     "KeyPair": {
       "Type": "AWS::EC2::KeyPair::KeyName",
