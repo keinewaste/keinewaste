@@ -71,6 +71,7 @@ services:
             debug                 : '%app.debug%'
             cache                 : '%http_cache%'
             controllers.ping      : '@PingController'
+            controllers.user      : '@UserController'
 
         calls:
          - [register, ['@ServiceControllerServiceProvider']]
@@ -198,8 +199,29 @@ services:
             pdo: '@PdoConnection'
           - '@DoctrineAnnotations'
 
+#Tasks
+    ImportTask:
+        class: "KeineWaste\\Console\\ImportData"
+        lazy: true
+        arguments:
+          - '@DoctrineEntityManager'
+          -
+            - '@InitFixture'
+
+#Fixtures
+    InitFixture:
+        class: "KeineWaste\\Fixtures\\Init"
 
 #Controllers
+
+    DefaultControllerConfig:
+        class: "KeineWaste\\Config\\Endpoint"
+        lazy: true
+        public: false
+        arguments:
+         - # Properties
+           '%rest.defaults%'
+        lazy: true
 
     #Ping Controller
     PingControllerConfig:
@@ -210,6 +232,16 @@ services:
          - # Properties
            '%rest.ping.defaults%'
         lazy: true
+
+    DefaultResponse:
+        class: "Symfony\\Component\\HttpFoundation\\JsonResponse"
+        lazy: true
+        public: false
+        arguments:
+         - ""
+         - 200
+         -
+           Cache-Control : "%cache-control.ping%"
 
     PingDefaultResponse:
         class: "Symfony\\Component\\HttpFoundation\\JsonResponse"
@@ -228,3 +260,13 @@ services:
         calls:
          - [setResponse, ['@PingDefaultResponse']]
          - [setConfig, ['@PingControllerConfig']]
+
+    UserController:
+        class: "KeineWaste\\Controllers\\UserController"
+        lazy: true
+        public: false
+        arguments:
+         - '@DoctrineEntityManager'
+        calls:
+         - [setResponse, ['@DefaultResponse']]
+         - [setConfig, ['@DefaultControllerConfig']]

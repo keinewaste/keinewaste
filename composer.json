@@ -36,7 +36,8 @@
     "monolog/monolog": "~1.13,>=1.13.1",
     "aws/aws-sdk-php": "3.*",
     "twig/twig": "~1.0",
-    "cobaia/monologdoctrine": "^1.0"
+    "cobaia/monologdoctrine": "^1.0",
+    "doctrine/doctrine-fixtures-bundle": "2.3.*"
   },
   "require-dev": {
     "flow/jsonpath": "~0.2",

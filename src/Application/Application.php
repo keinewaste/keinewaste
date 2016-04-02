@@ -19,5 +19,6 @@ class Application extends Base
     {
         //Ping
         $this->match(static::URL_PREFIX . '/ping', 'controllers.ping:pingAction')->method('GET');
+        $this->match(static::URL_PREFIX . '/user', 'controllers.user:getAction')->method('GET');
     }
 }

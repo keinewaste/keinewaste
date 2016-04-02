@@ -32,7 +32,7 @@ class BuildTask extends Command
 
     protected function buildDiCache(InputInterface $input, OutputInterface $output)
     {
-        $output->write('building...');
+        $output->writeln('building...');
 
         $diCacheFilename = __DIR__ . '/../../cache/keinewaste.di.cache.php';
 
