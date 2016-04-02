@@ -18,6 +18,7 @@ Vagrant.configure(2) do |config|
 
   config.vm.provision "shell", path: "puppet/modules/scripts/files/init.sh", args: ""
 
+
   config.vm.provision :shell do |shell|
     shell.inline = "mkdir -p /etc/puppet/modules;
     puppet module install puppetlabs-stdlib --force;
@@ -27,10 +28,12 @@ Vagrant.configure(2) do |config|
     "
   end
 
-
   config.vm.provision :puppet do |puppet|
       puppet.manifests_path = 'puppet/manifests'
       puppet.module_path = 'puppet/modules'
       puppet.manifest_file = 'init.pp'
   end
+
+  config.vm.provision "shell", path: "puppet/modules/scripts/files/post.sh", args: ""
+
 end
