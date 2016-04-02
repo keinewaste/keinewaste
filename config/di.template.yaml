@@ -334,6 +334,7 @@ services:
         calls:
          - [setResponse, ['@DefaultResponse']]
          - [setConfig, ['@DefaultControllerConfig']]
+         - [setUserService, ['@UserService']]
 
     CategoriesController:
         class: "KeineWaste\\Controllers\\CategoriesController"

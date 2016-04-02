@@ -99,11 +99,12 @@ class MarketController
      */
     public function createAction(Request $request)
     {
+        $user = $this->getLoggedUser($request, false);
+        if (null === $user) {
+            throw new NotFoundHttpException();
+        }
+
         $data = json_decode($request->getContent(), true);
-        ini_set('display_errors', true);
-        ini_set('html_errors', false);
-//        var_dump($data);die;
-        $user = null;
 
         $offer = $this->marketService->createOffer(
             $user,
