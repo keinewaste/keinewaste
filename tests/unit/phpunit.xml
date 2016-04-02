@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<phpunit bootstrap="./../_bootstrap.php">
+    <logging>
+        <log type="junit" target="../_output/logs/junit.xml" logIncompleteSkipped="false"/>
+        <log type="coverage-html" target="../_output/coverage/" />
+        <log type="coverage-clover" target="../_output/logs/clover.xml"/>
+    </logging>
+    <!-- Coverage filter -->
+    <filter>
+        <blacklist>
+            <directory>../../vendor/</directory>
+            <directory>.</directory>
+        </blacklist>
+        <whitelist>
+            <directory>../../src</directory>
+        </whitelist>
+    </filter>
+    <testsuites>
+        <testsuite name="Keine Waste API Unit tests">
+            <directory>./</directory>
+        </testsuite>
+    </testsuites>
+</phpunit>

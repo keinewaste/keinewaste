@@ -19,3 +19,9 @@ To build:
 ```
 ant build -Denv=dev
 ```
+
+To run tests:
+
+```
+ant test
+```
