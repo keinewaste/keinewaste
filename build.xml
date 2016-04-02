@@ -78,7 +78,20 @@
             <arg value="build-di"/>
         </exec>
     </target>
-    <target name="build" depends="create-properties,install-dependencies,install-dependencies-dev,di,remove-cache">
+
+    <target name="init-db">
+        <exec executable="vendor/bin/doctrine">
+            <arg value="orm:schema-tool:update"/>
+        </exec>
+    </target>
+
+    <target name="import-data">
+        <exec executable="bin/backend">
+            <arg value="import-data"/>
+        </exec>
+    </target>
+
+    <target name="build" depends="create-properties,install-dependencies,install-dependencies-dev,di,remove-cache,init-db,import-data">
 
     </target>
 

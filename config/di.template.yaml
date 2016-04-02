@@ -72,6 +72,7 @@ services:
             cache                 : '%http_cache%'
             controllers.ping      : '@PingController'
             controllers.user      : '@UserController'
+            controllers.users     : '@UsersController'
 
         calls:
          - [register, ['@ServiceControllerServiceProvider']]
@@ -263,6 +264,16 @@ services:
 
     UserController:
         class: "KeineWaste\\Controllers\\UserController"
+        lazy: true
+        public: false
+        arguments:
+         - '@DoctrineEntityManager'
+        calls:
+         - [setResponse, ['@DefaultResponse']]
+         - [setConfig, ['@DefaultControllerConfig']]
+
+    UsersController:
+        class: "KeineWaste\\Controllers\\UsersController"
         lazy: true
         public: false
         arguments:
