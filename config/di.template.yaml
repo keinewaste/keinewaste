@@ -60,7 +60,11 @@ parameters:
 
     doctrine.autogenerate_proxies: @doctrine.autogenerate_proxies@
 
-
+    spoonacular.baseUrl: "https://spoonacular-recipe-food-nutrition-v1.p.mashape.com"
+    spoonacular.baseUrlRecipeImage: "https://spoonacular.com/recipeImages/"
+    spoonacular.baseUrlIngredientImage: "https://spoonacular.com/cdn/ingredients_100x100/"
+    spoonacular.headers:
+        X-Mashape-Key: @mashapeKey@
 
 services:
     # Application
@@ -73,6 +77,7 @@ services:
             controllers.ping      : '@PingController'
             controllers.user      : '@UserController'
             controllers.users     : '@UsersController'
+            controllers.autocomplete : '@AutocompleteController'
 
         calls:
          - [register, ['@ServiceControllerServiceProvider']]
@@ -209,6 +214,16 @@ services:
           -
             - '@InitFixture'
 
+#Services
+    SpoonacularApi:
+        class: "KeineWaste\\Services\\Spoonacular"
+        lazy: true
+        arguments:
+          - '%spoonacular.baseUrl%'
+          - '%spoonacular.headers%'
+          - '%spoonacular.baseUrlRecipeImage%'
+          - '%spoonacular.baseUrlIngredientImage%'
+
 #Fixtures
     InitFixture:
         class: "KeineWaste\\Fixtures\\Init"
@@ -278,6 +293,16 @@ services:
         public: false
         arguments:
          - '@DoctrineEntityManager'
+        calls:
+         - [setResponse, ['@DefaultResponse']]
+         - [setConfig, ['@DefaultControllerConfig']]
+
+    AutocompleteController:
+        class: "KeineWaste\\Controllers\\AutocompleteController"
+        lazy: true
+        public: false
+        arguments:
+         - '@SpoonacularApi'
         calls:
          - [setResponse, ['@DefaultResponse']]
          - [setConfig, ['@DefaultControllerConfig']]
