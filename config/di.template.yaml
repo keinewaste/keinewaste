@@ -12,7 +12,7 @@ parameters:
     aws.secret_access_key: @aws.secret_access_key@
     aws.ses.region: 'eu-west-1'
 
-    mailing.from: 'hackathon <info@hackathon.org>'
+    mailing.from: 'hackathon <info@reputat.io>'
 
     app.config: &app.config
       api.locale.defaultAppDomain: "1"
@@ -281,3 +281,33 @@ services:
         calls:
          - [setResponse, ['@DefaultResponse']]
          - [setConfig, ['@DefaultControllerConfig']]
+
+
+# Services
+
+    AwsCommonCredentialsCredentials:
+        class: "Aws\\Credentials\\Credentials"
+        arguments:
+          - %aws.access_key_id%
+          - %aws.secret_access_key%
+
+#Notification Service
+    AwsSesClient:
+        class: "Aws\\Ses\\SesClient"
+        public: false
+        lazy: false
+        arguments:
+          -
+            region      : '%aws.ses.region%'
+            version     : 'latest'
+            credentials : '@AwsCommonCredentialsCredentials'
+
+    MailingService:
+        class: "Instela\\Services\\Notification\\MailingService"
+        lazy: true
+        public: false
+        arguments:
+          - '@AwsSesClient'
+          - '%mailing.from%'
+        calls:
+          - [setLogger, ['@Logger']]

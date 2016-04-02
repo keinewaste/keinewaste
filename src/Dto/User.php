@@ -12,8 +12,8 @@ class User extends Dto implements \JsonSerializable
     function __construct($createdAt, $name, $offers = null)
     {
         $this->createdAt = $createdAt;
-        $this->name = $name;
-        $this->offers = $offers ? $offers : new ArrayCollection();
+        $this->name      = $name;
+        $this->offers    = $offers ? $offers : new ArrayCollection();
     }
 
     public function jsonSerialize()
@@ -24,9 +24,9 @@ class User extends Dto implements \JsonSerializable
         }
 
         return [
-            'id' => $this->id,
-            'name' => $this->name,
-            'offers' => $offers,
+            'id'        => $this->id,
+            'name'      => $this->name,
+            'offers'    => $offers,
             'createdAt' => $this->createdAt,
         ];
     }
@@ -42,9 +42,37 @@ class User extends Dto implements \JsonSerializable
      */
     protected $offers;
 
-    /** @Column(type="string") */
+    /**
+     * @Column(type="string")
+     * @var string
+     */
     protected $name;
 
-    /** @Column(type="datetime", name="posted_at") */
+    /**
+     * @Column(type="datetime", name="posted_at")
+     */
     protected $createdAt;
+
+    /**
+     * @Column(type="string", name="email")
+     * @var string
+     */
+    protected $email;
+
+    /**
+     * @return string
+     */
+    public function getEmail()
+    {
+        return $this->email;
+    }
+
+    /**
+     * @param string $email
+     */
+    public function setEmail($email)
+    {
+        $this->email = $email;
+    }
+
 }
