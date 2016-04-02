@@ -1,7 +1,6 @@
 <?php
 
 
-
 use Symfony\Component\Debug\ExceptionHandler;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpKernel\Exception\HttpException;
@@ -56,6 +55,19 @@ $controllerExceptionHandler = function (\Exception $e) use ($logger, $app) {
 
 $app->error(
     $controllerExceptionHandler
+);
+
+$app->after(
+    function (\Symfony\Component\HttpFoundation\Request $request, \Symfony\Component\HttpFoundation\Response $response) {
+        $response->headers->add(
+            [
+                'Access-Control-Allow-Origin'  => '*',
+                'Access-Control-Allow-Methods' => 'GET, PUT, DELETE, OPTIONS, POST',
+
+            ]
+        );
+        return $response;
+    }
 );
 
 
