@@ -1,40 +1,5 @@
 language: php
 php:
+  - '5.4'
+  - '5.5'
   - '5.6'
-  #- '7.0'
-  #- hhvm
-
-
-services:
-  - docker
-
-before_script:
-    - echo "extension = memcached.so" >> ~/.phpenv/versions/$(phpenv version-name)/etc/php.ini
-
-    - sed "s/<EMAIL>/$DOCKER_EMAIL/;s/<AUTH>/$DOCKER_AUTH/" < $TRAVIS_BUILD_DIR/.provision/.dockercfg.template > ~/.dockercfg
-
-    #memcache
-    - docker run --name instela-memcache -d memcached
-
-    #mysql
-    - docker create --name instela-mysql-data cagataygurturk/instela-api-docker-mysql
-    - docker run -d -p 3307:3306 --name instela-mysql-docker --volumes-from instela-mysql-data -e MYSQL_ALLOW_EMPTY_PASSWORD=yes mysql:5.6.26
-
-    #web
-    - docker pull vutran/docker-nginx-hhvm
-    - docker run --name instela-api -d -P -p 80:80 -p 443:443 --link instela-mysql-docker:mysql-server --link instela-memcache:memcache -v $TRAVIS_BUILD_DIR:/var/www/html -v $TRAVIS_BUILD_DIR/.provision/docker/nginx/instela-api.conf:/etc/nginx/sites-available/default -v /var/log/nginx:/var/log/nginx vutran/docker-nginx-hhvm
-    - ant -Denv=travis
-
-addons:
-  hosts:
-    - api.instela.net
-  addons:
-    artifacts: true
-    s3_region: "eu-west-1"
-    paths:
-      - "/var/log/nginx"
-
-notifications:
-  slack: instela-technology:R173tMRUgEphhiP8IOxW6tGp
-
-script: vendor/bin/codecept run
