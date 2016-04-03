@@ -11,6 +11,13 @@ date_default_timezone_set('Europe/Berlin');
 $diContainer = require(__DIR__ . '/../src/di.php');
 
 
+$cors = [
+    'Access-Control-Allow-Origin'      => '*',
+    'Access-Control-Allow-Methods'     => 'GET, PUT, DELETE, OPTIONS, POST',
+    'Access-Control-Allow-Headers'     => 'Content-Type, Authorization',
+    'Access-Control-Allow-Credentials' => 'true'
+];
+
 /**
  * @var \KeineWaste\Application\Base $app
  */
@@ -59,16 +66,10 @@ $app->error(
 );
 
 $app->before(
-    function (\Symfony\Component\HttpFoundation\Request $request, \KeineWaste\Application\Application $app) {
+    function (\Symfony\Component\HttpFoundation\Request $request, \KeineWaste\Application\Application $app) use ($cors) {
         if ($request->getMethod() == 'OPTIONS') {
             $response = new \Symfony\Component\HttpFoundation\Response();
-            $response->headers->add(
-                [
-                    'Access-Control-Allow-Origin'  => '*',
-                    'Access-Control-Allow-Methods' => 'GET, PUT, DELETE, OPTIONS, POST',
-
-                ]
-            );
+            $response->headers->add($cors);
             return $response
                 ->setStatusCode(200);
         }
@@ -76,14 +77,8 @@ $app->before(
 );
 
 $app->after(
-    function (\Symfony\Component\HttpFoundation\Request $request, \Symfony\Component\HttpFoundation\Response $response) {
-        $response->headers->add(
-            [
-                'Access-Control-Allow-Origin'  => '*',
-                'Access-Control-Allow-Methods' => 'GET, PUT, DELETE, OPTIONS, POST',
-
-            ]
-        );
+    function (\Symfony\Component\HttpFoundation\Request $request, \Symfony\Component\HttpFoundation\Response $response) use ($cors) {
+        $response->headers->add($cors);
         return $response;
     }
 );
