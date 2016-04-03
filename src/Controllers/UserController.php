@@ -64,7 +64,7 @@ class UserController
 
         $requestData = json_decode($requestContent, true);
 
-        //@todo:remove hardcode
+        //@todo:remove hardcore
         $requestData['companyName'] = 'Restaurant amigo';
         $requestData['address'] = 'Greifswalder Strasse 212, Berlin';
         $requestData['type'] = 'donor';

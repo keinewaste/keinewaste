@@ -17,7 +17,7 @@ class Init extends AbstractFixture implements OrderedFixtureInterface
 
 
         $user = new User(1, 'no@email.com', 'Mark Sugarmountain');
-        $user->setAddress('Greifswalder Strasse 212, Berlin');
+        $user->setAddress('Greifswalder Straße 212, Berlin');
         $user->setCompanyName('FeedingFeeding');
         $user->setType(User::USER_TYPE_DONOR);
 
@@ -26,7 +26,7 @@ class Init extends AbstractFixture implements OrderedFixtureInterface
         $manager->persist($user);
 
         $consumer1 = new User(2, 'no2@email.com', 'Mariem Yamrali');
-        $consumer1->setAddress('Karl-Marx-Strasse 100, Berlin');
+        $consumer1->setAddress('Karl-Marx-Straße 100, Berlin');
         $consumer1->setCompanyName('HelpingMouths');
         $consumer1->setType(User::USER_TYPE_RECEIVER);
         $consumer1->setDeliveryType(User::DELIVERY_TYPE_PICKUP);
@@ -49,7 +49,7 @@ class Init extends AbstractFixture implements OrderedFixtureInterface
         $manager->persist($consumer1);
 
         $consumer2 = new User(3, 'no3@email.com', 'Wolly Bolly');
-        $consumer2->setAddress('Charlottenstrasse 2, 10969, Berlin');
+        $consumer2->setAddress('Charlottenstraße 2, 10969, Berlin');
         $consumer2->setCompanyName('CompanyName 2');
         $consumer2->setType(User::USER_TYPE_RECEIVER);
         $consumer2->setDeliveryType(User::DELIVERY_TYPE_DELIVERY);

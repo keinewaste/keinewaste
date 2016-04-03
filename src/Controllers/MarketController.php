@@ -144,8 +144,10 @@ class MarketController
             throw new ServiceUnavailableHttpException();
         }
 
+        $match = $this->marketService->getMatches($offer);
+
         return $this
             ->getResponse()
-            ->setData($offer);
+            ->setData($match);
     }
 }
