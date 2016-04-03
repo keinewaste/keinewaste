@@ -1,7 +1,7 @@
 <?php
 
 
-
+use Silex\Application;
 use Symfony\Component\Debug\ExceptionHandler;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpKernel\Exception\HttpException;
@@ -10,6 +10,13 @@ date_default_timezone_set('Europe/Berlin');
 
 $diContainer = require(__DIR__ . '/../src/di.php');
 
+
+$cors = [
+    'Access-Control-Allow-Origin'      => '*',
+    'Access-Control-Allow-Methods'     => 'GET, PUT, DELETE, OPTIONS, POST',
+    'Access-Control-Allow-Headers'     => 'Content-Type, Authorization',
+    'Access-Control-Allow-Credentials' => 'true'
+];
 
 /**
  * @var \KeineWaste\Application\Base $app
@@ -56,6 +63,24 @@ $controllerExceptionHandler = function (\Exception $e) use ($logger, $app) {
 
 $app->error(
     $controllerExceptionHandler
+);
+
+$app->before(
+    function (\Symfony\Component\HttpFoundation\Request $request, \KeineWaste\Application\Application $app) use ($cors) {
+        if ($request->getMethod() == 'OPTIONS') {
+            $response = new \Symfony\Component\HttpFoundation\Response();
+            $response->headers->add($cors);
+            return $response
+                ->setStatusCode(200);
+        }
+    }, Application::EARLY_EVENT
+);
+
+$app->after(
+    function (\Symfony\Component\HttpFoundation\Request $request, \Symfony\Component\HttpFoundation\Response $response) use ($cors) {
+        $response->headers->add($cors);
+        return $response;
+    }
 );
 
 
