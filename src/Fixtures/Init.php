@@ -17,7 +17,7 @@ class Init extends AbstractFixture implements OrderedFixtureInterface
 
 
         $user = new User(1, 'no@email.com', 'Mark Sugarmountain');
-        $user->setAddress('Greifswalder Straße 212, Berlin');
+        $user->setAddress('Greifswalder Strasse 212, Berlin');
         $user->setCompanyName('FeedingFeeding');
         $user->setType(User::USER_TYPE_DONOR);
 
@@ -25,20 +25,31 @@ class Init extends AbstractFixture implements OrderedFixtureInterface
 
         $manager->persist($user);
 
-        $consumer1 = new User(2, 'no2@email.com', 'Uncle Bens');
+        $consumer1 = new User(2, 'no2@email.com', 'Mariem Yamrali');
         $consumer1->setAddress('Karl-Marx-Strasse 100, Berlin');
-        $consumer1->setCompanyName('CompanyName 1');
+        $consumer1->setCompanyName('HelpingMouths');
         $consumer1->setType(User::USER_TYPE_RECEIVER);
         $consumer1->setDeliveryType(User::DELIVERY_TYPE_PICKUP);
-        $consumer1->setDistance(6000);
-        $consumer1->setCategories([$categoriesRepository->find(1) , $categoriesRepository->find(2) , $categoriesRepository->find(5)]);
-        $consumer1->setMeetingTimeFrom(new \DateTime('2016-04-03 15:00:00'));
-        $consumer1->setMeetingTimeTo(new \DateTime('2016-04-03 20:00:00'));
+        $consumer1->setDistance(10000);
+        $consumer1->setCategories([
+            $categoriesRepository->find(1),
+            $categoriesRepository->find(2),
+            $categoriesRepository->find(3),
+            $categoriesRepository->find(4),
+            $categoriesRepository->find(5),
+            $categoriesRepository->find(6),
+            $categoriesRepository->find(7),
+            $categoriesRepository->find(8),
+            $categoriesRepository->find(9),
+        ]);
+        $consumer1->setMeetingTimeFrom(new \DateTime('2016-04-03 00:00:00'));
+        $consumer1->setMeetingTimeTo(new \DateTime('2017-04-03 20:00:00'));
         $consumer1->setToken('xxxxx1wBAJjuUjikvtFoAjPkNcpm5gFzZCu5d6SXg1NwsHQdwc7SaA7TZBK0ob3kOAvogAOhtOMIwhR0KNqzZAXuDb5iTaWmWRQ2B36FXZBJysy9RdBZBqF82Ud04NvxZAMaz5tyKEg9SXB8LZB6ZCRuZA7aMx6WryNw5IJeMRwem3yBF7Icsz4hkj21r0uPnYLJgTIiEuTEo3yNOkn5n');
+        $consumer1->setImageUrl('http://s.huffpost.com/contributors/robyn-vie-carpenter/headshot.jpg');
         $manager->persist($consumer1);
 
         $consumer2 = new User(3, 'no3@email.com', 'Wolly Bolly');
-        $consumer2->setAddress('Charlottenstraße 2, 10969, Berlin');
+        $consumer2->setAddress('Charlottenstrasse 2, 10969, Berlin');
         $consumer2->setCompanyName('CompanyName 2');
         $consumer2->setType(User::USER_TYPE_RECEIVER);
         $consumer2->setDeliveryType(User::DELIVERY_TYPE_DELIVERY);
@@ -55,7 +66,7 @@ class Init extends AbstractFixture implements OrderedFixtureInterface
             'blabla',
             10000,
             [],
-            new \DateTime("2016-04-12 19:00:00"),
+            new \DateTime("2016-04-12 15:00:00"),
             [$categoriesRepository->find(1) , $categoriesRepository->find(2)]
         );
 
