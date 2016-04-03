@@ -43,7 +43,7 @@ class User extends Dto implements \JsonSerializable
             'type'        => $this->type,
             'offers'      => $offers,
             'createdAt'   => $this->createdAt,
-            'imageUrl'    => $this->getProfilePicture()
+            'imageUrl'    => $this->getProfilePicture(),
         ];
     }
 

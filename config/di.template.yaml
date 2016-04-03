@@ -69,6 +69,8 @@ parameters:
     spoonacular.headers:
         X-Mashape-Key: @mashapeKey@
 
+    google.apiKey: @google.apiKey@
+
 services:
     # Application
     App:
@@ -241,11 +243,18 @@ services:
           - '%spoonacular.baseUrlRecipeImage%'
           - '%spoonacular.baseUrlIngredientImage%'
 
+    GeolocationService:
+        class: "KeineWaste\\Services\\Geolocation"
+        lazy: true
+        arguments:
+          - '%google.apiKey%'
+
     MarketService:
         class: "KeineWaste\\Services\\MarketService"
         lazy: true
         arguments:
           - '@DoctrineEntityManager'
+          - '@GeolocationService'
 
 #Fixtures
     InitFixture:

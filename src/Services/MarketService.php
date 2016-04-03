@@ -17,6 +17,11 @@ class MarketService
     protected $em;
 
     /**
+     * @var Geolocation $geo
+     */
+    protected $geo;
+
+    /**
      * @var \Doctrine\Common\Persistence\ObjectRepository $usersRep
      */
     protected $usersRep;
@@ -41,9 +46,10 @@ class MarketService
      *
      * @param EntityManagerInterface $em
      */
-    public function __construct(EntityManagerInterface $em)
+    public function __construct(EntityManagerInterface $em, Geolocation $geo)
     {
         $this->em = $em;
+        $this->geo = $geo;
         $this->usersRep = $em->getRepository('KeineWaste\Dto\User');
         $this->offersRep = $em->getRepository('KeineWaste\Dto\Offer');
         $this->productsRep = $em->getRepository('KeineWaste\Dto\Product');
@@ -101,5 +107,55 @@ class MarketService
     public function getOffersByUserId($userId)
     {
         return $this->offersRep->findBy(['user' => $userId]);
+    }
+
+    public function getMatches(Offer $offer)
+    {
+        // comparing categories
+        $offers = $this->offersRep->findAll();
+        /** @var Offer $offer */
+        $offer = $offers[0];
+        $categories = $offer->getCategories();
+        $categoriesIds = [];
+        foreach ($categories as $cat) {
+            $categoriesIds[] = $cat->getId();
+        }
+
+        $categoriesIds = [1,3, 2];
+        $consumerCategories = [1,2,3];
+
+        sort($categoriesIds);
+        sort($consumerCategories);
+
+        $match = $categoriesIds == array_values(array_intersect($consumerCategories, $categoriesIds));
+
+        // comparing delivery type
+        $donorDeliveryType = 'pickup';
+        $consumerDeliveryType = 'delivery';
+
+        $match = $consumerDeliveryType == 'pickup' || $consumerDeliveryType != $donorDeliveryType;
+
+        // comparing time
+        $dateOffer = new \DateTime('now');
+
+        $dateConsumeFrom = new \DateTime('2016-04-03 02:00:00');
+        $dateConsumeTo = new \DateTime('2016-04-03 05:00:00');
+
+        $r = $dateOffer > $dateConsumeFrom && $dateOffer < $dateConsumeTo;
+
+        // comparing distance
+        $r = $this->geo->getInRadius(
+            "Karl-Marx-Straße 100, Berlin",
+            [
+                5 => "Greifswalder Straße 212, Berlin",
+                7 => "Charlottenstraße 2, 10969, Berlin",
+            ],
+            6000
+        );
+        $r = array_column($r, 'id');
+        var_export($r);die;
+
+//        $matchedIds
+
     }
 }
