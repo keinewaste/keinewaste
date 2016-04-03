@@ -27,6 +27,7 @@ class Application extends Base
 
         $this->match(static::URL_PREFIX . '/market', 'controllers.market:getAllAction')->method('GET');
         $this->match(static::URL_PREFIX . '/market/{id}', 'controllers.market:getOneAction')->method('GET')->assert('id', '\d+');
+        $this->match(static::URL_PREFIX . '/market/{id}/match', 'controllers.market:getOfferMatch')->method('GET')->assert('id', '\d+');
         $this->match(static::URL_PREFIX . '/market/user/{id}', 'controllers.market:getAllByUserAction')->method('GET')->assert('id', '\d+');
         $this->match(static::URL_PREFIX . '/market/offer', 'controllers.market:createAction')->method('POST');
 

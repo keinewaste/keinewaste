@@ -8,7 +8,6 @@ use Doctrine\Common\Collections\ArrayCollection;
  **/
 class Offer extends Dto implements \JsonSerializable
 {
-
     function __construct($user, $deliveryType, $description, $distance, $products, $meetingTime, $categories)
     {
         $this->user = $user;
@@ -232,7 +231,4 @@ class Offer extends Dto implements \JsonSerializable
     {
         return $this->status;
     }
-
-
-
 }

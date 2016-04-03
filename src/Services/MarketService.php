@@ -111,51 +111,94 @@ class MarketService
 
     public function getMatches(Offer $offer)
     {
+        $candidates = $this->usersRep->findBy(['type' => User::USER_TYPE_RECEIVER]);
+
+        if (!count($candidates)) return [];
+
+
+
         // comparing categories
-        $offers = $this->offersRep->findAll();
-        /** @var Offer $offer */
-        $offer = $offers[0];
         $categories = $offer->getCategories();
         $categoriesIds = [];
         foreach ($categories as $cat) {
             $categoriesIds[] = $cat->getId();
         }
-
-        $categoriesIds = [1,3, 2];
-        $consumerCategories = [1,2,3];
-
         sort($categoriesIds);
-        sort($consumerCategories);
 
-        $match = $categoriesIds == array_values(array_intersect($consumerCategories, $categoriesIds));
+        $candidates = array_filter($candidates, function (User $user) use ($categoriesIds) {
+            $consumerCategories = [];
+            foreach ($user->getCategories() as $cat) {
+                $consumerCategories[] = $cat->getId();
+            }
+            sort($consumerCategories);
+
+            return $categoriesIds == array_values(array_intersect($consumerCategories, $categoriesIds));
+        });
+
+        if (!count($candidates)) return [];
+
+
 
         // comparing delivery type
-        $donorDeliveryType = 'pickup';
-        $consumerDeliveryType = 'delivery';
+        $donorDeliveryType = $offer->getDeliveryType();
 
-        $match = $consumerDeliveryType == 'pickup' || $consumerDeliveryType != $donorDeliveryType;
+        $candidates = array_filter($candidates, function (User $user) use ($donorDeliveryType) {
+            return $user->getDeliveryType() == 'pickup' || $user->getDeliveryType() != $donorDeliveryType;
+        });
+
+        if (!count($candidates)) return [];
+
+
 
         // comparing time
-        $dateOffer = new \DateTime('now');
+        /** @var \DateTime $donorMeetingTime */
+        $donorMeetingTime = $offer->getMeetingTime();
 
-        $dateConsumeFrom = new \DateTime('2016-04-03 02:00:00');
-        $dateConsumeTo = new \DateTime('2016-04-03 05:00:00');
+        $candidates = array_filter($candidates, function (User $user) use ($donorMeetingTime) {
+            /** @var \DateTime $dateConsumeFrom */
+            $dateConsumeFrom = $user->getMeetingTimeFrom();
+            $dateConsumeFrom->setDate(
+                $donorMeetingTime->format('Y'),
+                $donorMeetingTime->format('m'),
+                $donorMeetingTime->format('d')
+            );
 
-        $r = $dateOffer > $dateConsumeFrom && $dateOffer < $dateConsumeTo;
+            /** @var \DateTime $dateConsumeTo */
+            $dateConsumeTo = $user->getMeetingTimeTo();
+            $dateConsumeTo->setDate(
+                $donorMeetingTime->format('Y'),
+                $donorMeetingTime->format('m'),
+                $donorMeetingTime->format('d')
+            );
 
+            // @todo: but is it today?
+            return $donorMeetingTime > $dateConsumeFrom && $donorMeetingTime < $dateConsumeTo;
+        });
+
+        if (!count($candidates)) return [];
+
+
+        
         // comparing distance
-        $r = $this->geo->getInRadius(
-            "Karl-Marx-Straße 100, Berlin",
-            [
-                5 => "Greifswalder Straße 212, Berlin",
-                7 => "Charlottenstraße 2, 10969, Berlin",
-            ],
-            6000
+        $destinations = [];
+        foreach ($candidates as $user) {
+            $destinations[$user->getId()] = $user->getAddress();
+        }
+
+        //@todo: we don't count consumer distance there
+
+        $inRadius = $this->geo->getInRadius(
+            $offer->getUser()->getAddress(),
+            $destinations,
+            $offer->getDistance()
         );
-        $r = array_column($r, 'id');
-        var_export($r);die;
+        $inRadiusIds = array_column($inRadius, 'id');
+        $candidates = array_filter($candidates, function (User $user) use ($inRadiusIds) {
+            return in_array($user->getId(), $inRadiusIds);
+        });
 
-//        $matchedIds
+        if (!count($candidates)) return [];
 
+        return $candidates[0];
     }
 }

@@ -43,6 +43,30 @@ class MarketController
     }
 
     /**
+     * Get match
+     *
+     * @param Request $request Request
+     *
+     * @throws \Symfony\Component\HttpKernel\Exception\NotFoundHttpException
+     * @return JsonResponse
+     */
+    public function getOfferMatch(Request $request)
+    {
+        $offer = $this->marketService->getOfferById($request->get('id'));
+
+        if (!$offer) {
+            throw new NotFoundHttpException();
+        }
+
+        $match = $this->marketService->getMatches($offer);
+
+        return $this
+            ->getResponse()
+            ->setData($match);
+    }
+
+
+    /**
      * All offers by specified user action
      *
      * @param Request $request Request

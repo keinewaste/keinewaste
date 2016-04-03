@@ -11,5 +11,6 @@ namespace KeineWaste\Dto;
  */
 abstract class Dto
 {
-
+    const DELIVERY_TYPE_PICKUP = 'pickup';
+    const DELIVERY_TYPE_DELIVERY = 'delivery';
 }

@@ -10,20 +10,18 @@ use Pseudo\Exception;
  **/
 class User extends Dto implements \JsonSerializable
 {
-
     const USER_TYPE_DONOR = "donor";
     const USER_TYPE_RECEIVER = "receiver";
 
-
     function __construct($facebookId, $email, $name, $createdAt = null)
     {
-
         $this->facebookId = $facebookId;
         $this->email      = $email;
         $this->name       = $name;
         $this->type       = static::USER_TYPE_RECEIVER;
         $this->offers     = new ArrayCollection();
         $this->createdAt  = $createdAt ? $createdAt : new \DateTime("now");
+        $this->categories = new ArrayCollection;
     }
 
     public function jsonSerialize()
@@ -31,6 +29,11 @@ class User extends Dto implements \JsonSerializable
         $offers = [];
         foreach ($this->offers as $offer) {
             $offers[] = $offer->jsonSerialize();
+        }
+
+        $categories = [];
+        foreach ($this->categories as $category) {
+            $categories[] = $category->jsonSerialize();
         }
 
         return [
@@ -44,6 +47,12 @@ class User extends Dto implements \JsonSerializable
             'offers'      => $offers,
             'createdAt'   => $this->createdAt,
             'imageUrl'    => $this->getProfilePicture(),
+            // consumer fields below. empty for donors
+            'deliveryType' => $this->deliveryType,
+            'distance' => $this->distance,
+            'categories' => $categories,
+            'meetingTimeFrom' => $this->meetingTimeFrom,
+            'meetingTimeTo' => $this->meetingTimeTo,
         ];
     }
 
@@ -130,6 +139,31 @@ class User extends Dto implements \JsonSerializable
      * @var string
      */
     protected $profilePicture;
+
+
+
+    // consumer fields below. empty for donors
+    /**
+     * @var Category[] $categories
+     * @ManyToMany(targetEntity="Category",cascade={"persist"})
+     * @JoinTable(name="users_categories",
+     *      joinColumns={@JoinColumn(name="user_id", referencedColumnName="id")},
+     *      inverseJoinColumns={@JoinColumn(name="category_id", referencedColumnName="id")}
+     *      )
+     */
+    protected $categories;
+
+    /** @Column(type="datetime", nullable=true) */
+    protected $meetingTimeFrom;
+
+    /** @Column(type="datetime", nullable=true) */
+    protected $meetingTimeTo;
+
+    /** @Column(type="string", nullable=true) */
+    protected $deliveryType;
+
+    /** @Column(type="integer", nullable=true) */
+    protected $distance;
 
     /**
      * @return int
@@ -321,5 +355,86 @@ class User extends Dto implements \JsonSerializable
     {
         return $this->type;
     }
+
+    /**
+     * @param \KeineWaste\Dto\Category[] $categories
+     */
+    public function setCategories($categories)
+    {
+        $this->categories = $categories;
+    }
+
+    /**
+     * @return \KeineWaste\Dto\Category[]
+     */
+    public function getCategories()
+    {
+        return $this->categories;
+    }
+
+    /**
+     * @param mixed $deliveryType
+     */
+    public function setDeliveryType($deliveryType)
+    {
+        $this->deliveryType = $deliveryType;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getDeliveryType()
+    {
+        return $this->deliveryType;
+    }
+
+    /**
+     * @param mixed $meetingTimeFrom
+     */
+    public function setMeetingTimeFrom($meetingTimeFrom)
+    {
+        $this->meetingTimeFrom = $meetingTimeFrom;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getMeetingTimeFrom()
+    {
+        return $this->meetingTimeFrom;
+    }
+
+    /**
+     * @param mixed $meetingTimeTo
+     */
+    public function setMeetingTimeTo($meetingTimeTo)
+    {
+        $this->meetingTimeTo = $meetingTimeTo;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getMeetingTimeTo()
+    {
+        return $this->meetingTimeTo;
+    }
+
+    /**
+     * @param mixed $distance
+     */
+    public function setDistance($distance)
+    {
+        $this->distance = $distance;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getDistance()
+    {
+        return $this->distance;
+    }
+
 
 }

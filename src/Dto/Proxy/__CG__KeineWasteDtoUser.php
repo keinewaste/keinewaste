@@ -64,10 +64,10 @@ class User extends \KeineWaste\Dto\User implements \Doctrine\ORM\Proxy\Proxy
     public function __sleep()
     {
         if ($this->__isInitialized__) {
-            return ['__isInitialized__', 'id', 'facebookId', 'offers', 'name', 'companyName', 'address', 'type', 'bio', 'createdAt', 'email', 'token', 'sentMessages', 'receivedMessages', 'profilePicture'];
+            return ['__isInitialized__', 'id', 'facebookId', 'offers', 'name', 'companyName', 'address', 'type', 'bio', 'createdAt', 'email', 'token', 'sentMessages', 'receivedMessages', 'profilePicture', 'categories', 'meetingTimeFrom', 'meetingTimeTo', 'deliveryType', 'distance'];
         }
 
-        return ['__isInitialized__', 'id', 'facebookId', 'offers', 'name', 'companyName', 'address', 'type', 'bio', 'createdAt', 'email', 'token', 'sentMessages', 'receivedMessages', 'profilePicture'];
+        return ['__isInitialized__', 'id', 'facebookId', 'offers', 'name', 'companyName', 'address', 'type', 'bio', 'createdAt', 'email', 'token', 'sentMessages', 'receivedMessages', 'profilePicture', 'categories', 'meetingTimeFrom', 'meetingTimeTo', 'deliveryType', 'distance'];
     }
 
     /**
@@ -439,6 +439,116 @@ class User extends \KeineWaste\Dto\User implements \Doctrine\ORM\Proxy\Proxy
         $this->__initializer__ && $this->__initializer__->__invoke($this, 'getType', []);
 
         return parent::getType();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function setCategories($categories)
+    {
+
+        $this->__initializer__ && $this->__initializer__->__invoke($this, 'setCategories', [$categories]);
+
+        return parent::setCategories($categories);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function getCategories()
+    {
+
+        $this->__initializer__ && $this->__initializer__->__invoke($this, 'getCategories', []);
+
+        return parent::getCategories();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function setDeliveryType($deliveryType)
+    {
+
+        $this->__initializer__ && $this->__initializer__->__invoke($this, 'setDeliveryType', [$deliveryType]);
+
+        return parent::setDeliveryType($deliveryType);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function getDeliveryType()
+    {
+
+        $this->__initializer__ && $this->__initializer__->__invoke($this, 'getDeliveryType', []);
+
+        return parent::getDeliveryType();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function setMeetingTimeFrom($meetingTimeFrom)
+    {
+
+        $this->__initializer__ && $this->__initializer__->__invoke($this, 'setMeetingTimeFrom', [$meetingTimeFrom]);
+
+        return parent::setMeetingTimeFrom($meetingTimeFrom);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function getMeetingTimeFrom()
+    {
+
+        $this->__initializer__ && $this->__initializer__->__invoke($this, 'getMeetingTimeFrom', []);
+
+        return parent::getMeetingTimeFrom();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function setMeetingTimeTo($meetingTimeTo)
+    {
+
+        $this->__initializer__ && $this->__initializer__->__invoke($this, 'setMeetingTimeTo', [$meetingTimeTo]);
+
+        return parent::setMeetingTimeTo($meetingTimeTo);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function getMeetingTimeTo()
+    {
+
+        $this->__initializer__ && $this->__initializer__->__invoke($this, 'getMeetingTimeTo', []);
+
+        return parent::getMeetingTimeTo();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function setDistance($distance)
+    {
+
+        $this->__initializer__ && $this->__initializer__->__invoke($this, 'setDistance', [$distance]);
+
+        return parent::setDistance($distance);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function getDistance()
+    {
+
+        $this->__initializer__ && $this->__initializer__->__invoke($this, 'getDistance', []);
+
+        return parent::getDistance();
     }
 
 }

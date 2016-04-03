@@ -13,27 +13,49 @@ class Init extends AbstractFixture implements OrderedFixtureInterface
 {
     public function load(ObjectManager $manager)
     {
+        $categoriesRepository = $manager->getRepository('KeineWaste\Dto\Category');
 
 
         $user = new User(1, 'no@email.com', 'Mark Sugarmountain');
-        $user->setAddress('Greifswalder Str 212');
+        $user->setAddress('Greifswalder Straße 212, Berlin');
         $user->setCompanyName('FeedingFeeding');
-        $user->setType('donor');
+        $user->setType(User::USER_TYPE_DONOR);
 
         $user->setToken('CAAYBQjWI6owBAJjuUjikvtFoAjPkNcpm5gFzZCu5d6SXg1NwsHQdwc7SaA7TZBK0ob3kOAvogAOhtOMIwhR0KNqzZAXuDb5iTaWmWRQ2B36FXZBJysy9RdBZBqF82Ud04NvxZAMaz5tyKEg9SXB8LZB6ZCRuZA7aMx6WryNw5IJeMRwem3yBF7Icsz4hkj21r0uPnYLJgTIiEuTEo3yNOkn5n');
 
         $manager->persist($user);
 
-        $categoriesRepository = $manager->getRepository('KeineWaste\Dto\Category');
+        $consumer1 = new User(2, 'no2@email.com', 'Uncle Bens');
+        $consumer1->setAddress('Karl-Marx-Strasse 100, Berlin');
+        $consumer1->setCompanyName('CompanyName 1');
+        $consumer1->setType(User::USER_TYPE_RECEIVER);
+        $consumer1->setDeliveryType(User::DELIVERY_TYPE_PICKUP);
+        $consumer1->setDistance(6000);
+        $consumer1->setCategories([$categoriesRepository->find(1) , $categoriesRepository->find(2) , $categoriesRepository->find(5)]);
+        $consumer1->setMeetingTimeFrom(new \DateTime('2016-04-03 15:00:00'));
+        $consumer1->setMeetingTimeTo(new \DateTime('2016-04-03 20:00:00'));
+        $consumer1->setToken('xxxxx1wBAJjuUjikvtFoAjPkNcpm5gFzZCu5d6SXg1NwsHQdwc7SaA7TZBK0ob3kOAvogAOhtOMIwhR0KNqzZAXuDb5iTaWmWRQ2B36FXZBJysy9RdBZBqF82Ud04NvxZAMaz5tyKEg9SXB8LZB6ZCRuZA7aMx6WryNw5IJeMRwem3yBF7Icsz4hkj21r0uPnYLJgTIiEuTEo3yNOkn5n');
+        $manager->persist($consumer1);
+
+        $consumer2 = new User(3, 'no3@email.com', 'Wolly Bolly');
+        $consumer2->setAddress('Charlottenstraße 2, 10969, Berlin');
+        $consumer2->setCompanyName('CompanyName 2');
+        $consumer2->setType(User::USER_TYPE_RECEIVER);
+        $consumer2->setDeliveryType(User::DELIVERY_TYPE_DELIVERY);
+        $consumer2->setCategories([$categoriesRepository->find(1) , $categoriesRepository->find(3)]);
+        $consumer2->setMeetingTimeFrom(new \DateTime('2016-04-03 00:00:00'));
+        $consumer2->setMeetingTimeTo(new \DateTime('2016-04-03 23:00:00'));
+        $consumer2->setToken('yyyy1wBAJjuUjikvtFoAjPkNcpm5gFzZCu5d6SXg1NwsHQdwc7SaA7TZBK0ob3kOAvogAOhtOMIwhR0KNqzZAXuDb5iTaWmWRQ2B36FXZBJysy9RdBZBqF82Ud04NvxZAMaz5tyKEg9SXB8LZB6ZCRuZA7aMx6WryNw5IJeMRwem3yBF7Icsz4hkj21r0uPnYLJgTIiEuTEo3yNOkn5n');
+        $manager->persist($consumer2);
 
         // @todo:created_at should be generated
         $offer = new Offer(
             $user,
             'pickup',
             'blabla',
-            5,
+            10000,
             [],
-            new \DateTime("now"),
+            new \DateTime("2016-04-12 19:00:00"),
             [$categoriesRepository->find(1) , $categoriesRepository->find(2)]
         );
 
