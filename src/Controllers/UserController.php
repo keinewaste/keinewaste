@@ -69,7 +69,7 @@ class UserController
         $requestData['address'] = 'Greifswalder Strasse 212, Berlin';
         $requestData['type'] = 'donor';
         $requestData['bio'] = 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Cras sit amet ante tincidunt, bibendum arcu ut, elementum nunc. In hac habitasse platea dictumst. Nullam vulputate id felis vitae commodo. Donec finibus, ante vel congue placerat, urna sapien feugiat quam, ut bibendum metus sapien vel lorem. Nunc placerat fringilla mauris eget congue. Fusce et finibus magna, sit amet fermentum leo. Praesent tellus augue, pellentesque vel consequat id, venenatis eget nulla. Nunc pharetra ante at dignissim rhoncus. Aliquam hendrerit fermentum purus, et pellentesque nisl malesuada id. Fusce pharetra, metus ut fringilla aliquam, lectus erat suscipit est, nec tristique sem neque eu nisi.';
-        $requestData['imageUrl'] = 'https://trello-avatars.s3.amazonaws.com/f725bba28c865092f7054d9295eb7403/50.png';
+        $requestData['imageUrl'] = 'https://avatars.slack-edge.com/2015-03-18/4091755768_facdb1b91bc481c3d895_192.jpg';
 
         if ($requestData == null || !is_array($requestData)) {
             throw new BadRequestHttpException();
