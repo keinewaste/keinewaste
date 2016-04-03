@@ -46,7 +46,7 @@ class User extends Dto implements \JsonSerializable
             'type'        => $this->type,
             'offers'      => $offers,
             'createdAt'   => $this->createdAt,
-            'imageUrl'    => $this->getProfilePicture(),
+            'imageUrl'    => $this->imageUrl,
             // consumer fields below. empty for donors
             'deliveryType' => $this->deliveryType,
             'distance' => $this->distance,
@@ -140,6 +140,9 @@ class User extends Dto implements \JsonSerializable
      */
     protected $profilePicture;
 
+
+    /** @Column(type="string", nullable=true) */
+    protected $imageUrl;
 
 
     // consumer fields below. empty for donors

@@ -64,10 +64,10 @@ class User extends \KeineWaste\Dto\User implements \Doctrine\ORM\Proxy\Proxy
     public function __sleep()
     {
         if ($this->__isInitialized__) {
-            return ['__isInitialized__', 'id', 'facebookId', 'offers', 'name', 'companyName', 'address', 'type', 'bio', 'createdAt', 'email', 'token', 'sentMessages', 'receivedMessages', 'profilePicture', 'categories', 'meetingTimeFrom', 'meetingTimeTo', 'deliveryType', 'distance'];
+            return ['__isInitialized__', 'id', 'facebookId', 'offers', 'name', 'companyName', 'address', 'type', 'bio', 'createdAt', 'email', 'token', 'sentMessages', 'receivedMessages', 'profilePicture', 'imageUrl', 'categories', 'meetingTimeFrom', 'meetingTimeTo', 'deliveryType', 'distance'];
         }
 
-        return ['__isInitialized__', 'id', 'facebookId', 'offers', 'name', 'companyName', 'address', 'type', 'bio', 'createdAt', 'email', 'token', 'sentMessages', 'receivedMessages', 'profilePicture', 'categories', 'meetingTimeFrom', 'meetingTimeTo', 'deliveryType', 'distance'];
+        return ['__isInitialized__', 'id', 'facebookId', 'offers', 'name', 'companyName', 'address', 'type', 'bio', 'createdAt', 'email', 'token', 'sentMessages', 'receivedMessages', 'profilePicture', 'imageUrl', 'categories', 'meetingTimeFrom', 'meetingTimeTo', 'deliveryType', 'distance'];
     }
 
     /**

@@ -42,8 +42,8 @@ class Init extends AbstractFixture implements OrderedFixtureInterface
             $categoriesRepository->find(8),
             $categoriesRepository->find(9),
         ]);
-        $consumer1->setMeetingTimeFrom(new \DateTime('2016-04-03 00:00:00'));
-        $consumer1->setMeetingTimeTo(new \DateTime('2017-04-03 20:00:00'));
+        $consumer1->setMeetingTimeFrom(new \DateTime('2016-04-03 03:00:00'));
+        $consumer1->setMeetingTimeTo(new \DateTime('2017-04-03 23:40:00'));
         $consumer1->setToken('xxxxx1wBAJjuUjikvtFoAjPkNcpm5gFzZCu5d6SXg1NwsHQdwc7SaA7TZBK0ob3kOAvogAOhtOMIwhR0KNqzZAXuDb5iTaWmWRQ2B36FXZBJysy9RdBZBqF82Ud04NvxZAMaz5tyKEg9SXB8LZB6ZCRuZA7aMx6WryNw5IJeMRwem3yBF7Icsz4hkj21r0uPnYLJgTIiEuTEo3yNOkn5n');
         $consumer1->setImageUrl('http://s.huffpost.com/contributors/robyn-vie-carpenter/headshot.jpg');
         $manager->persist($consumer1);
