@@ -1,6 +1,7 @@
 <?php
 
 
+use Silex\Application;
 use Symfony\Component\Debug\ExceptionHandler;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpKernel\Exception\HttpException;
@@ -71,7 +72,7 @@ $app->before(
             return $response
                 ->setStatusCode(200);
         }
-    }
+    }, Application::EARLY_EVENT
 );
 
 $app->after(
