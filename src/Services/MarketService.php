@@ -178,7 +178,7 @@ class MarketService
         if (!count($candidates)) return [];
 
 
-        
+         
         // comparing distance
         $destinations = [];
         foreach ($candidates as $user) {
