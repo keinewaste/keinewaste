@@ -136,7 +136,7 @@ class MarketController
             $data['description'],
             $data['distance'],
             $data['products'],
-            new \DateTime($data['meetingTime']['date']),
+            new \DateTime($data['meetingTime']),
             $data['categories']
         );
 
