@@ -3,7 +3,8 @@ namespace KeineWaste\Services;
 
 use Unirest\Request;
 
-class Spoonacular {
+class Spoonacular
+{
 
     /** @var  string[] $headers */
     protected $headers;
@@ -19,9 +20,9 @@ class Spoonacular {
 
     function __construct($baseUrl, $headers, $baseUrlRecipeImage, $baseUrlIngredientImage)
     {
-        $this->headers = $headers;
-        $this->baseUrl = $baseUrl;
-        $this->baseUrlRecipeImage = $baseUrlRecipeImage;
+        $this->headers                = $headers;
+        $this->baseUrl                = $baseUrl;
+        $this->baseUrlRecipeImage     = $baseUrlRecipeImage;
         $this->baseUrlIngredientImage = $baseUrlIngredientImage;
     }
 
@@ -33,11 +34,16 @@ class Spoonacular {
         $response = Request::get($this->baseUrl . "/food/ingredients/autocomplete?query=" . $query, $this->headers);
 
         if (count($response->body)) {
+            $i = 0;
             foreach ($response->body as $ingredient) {
                 $result[] = [
-                    'title' => $ingredient->name,
+                    'title'    => $ingredient->name,
                     'imageUrl' => $this->baseUrlIngredientImage . $ingredient->image,
                 ];
+                $i++;
+                if ($i >= 10) {
+                    break;
+                }
             }
             return $result;
         }
@@ -50,7 +56,7 @@ class Spoonacular {
         if (count($response->body)) {
             foreach ($response->body->results as $recipe) {
                 $result[] = [
-                    'title' => $recipe->title,
+                    'title'    => $recipe->title,
                     'imageUrl' => $this->baseUrlRecipeImage . $recipe->image,
                 ];
             }
